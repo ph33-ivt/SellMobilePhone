@@ -1,8 +1,9 @@
 <?php
 
+use App\Role;
 use Illuminate\Database\Seeder;
 
-class CommentsTableSeeder extends Seeder
+class UserRolesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,6 +12,6 @@ class CommentsTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Comment::class, 10)->create();
+        factory(App\UserRole::class, 10)->create();
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Brand;
 use Illuminate\Database\Seeder;
 
 class BrandsTableSeeder extends Seeder
@@ -11,6 +12,13 @@ class BrandsTableSeeder extends Seeder
      */
     public function run()
     {
-        //
+        //factory(App\Brand::class, 10)->create();
+        Brand::insert([
+            ['name' => 'Samsung'],
+            ['name' => 'iPhone'],
+            ['name' => 'Vsmart'],
+            ['name' => 'Xiaomi'],
+            ['name' => 'N/A'],
+        ]);
     }
 }

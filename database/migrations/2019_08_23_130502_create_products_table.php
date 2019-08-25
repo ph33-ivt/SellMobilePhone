@@ -15,6 +15,17 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('brand_id');
+            $table->string('name');
+            $table->decimal('current_price', 10, 2);
+            $table->float('discount_percent', 3,2)->default(0.00);
+            $table->text('description')->nullable();
+            $table->tinyInteger('warranty_period');
+            $table->smallInteger('quantity');
+            $table->string('image');
+            $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('brand_id')->references('id')->on('brands');
             $table->timestamps();
         });
     }
