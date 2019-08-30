@@ -19,7 +19,8 @@ class CreateImagesTable extends Migration
             $table->string('name');
             $table->string('path');
             $table->foreign('product_id')->references('id')->on('products');
-            $table->timestamps();
+            //$table->softDeletes();
+            //$table->timestamps();
         });
     }
 

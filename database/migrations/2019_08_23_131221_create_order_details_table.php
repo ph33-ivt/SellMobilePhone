@@ -25,7 +25,8 @@ class CreateOrderDetailsTable extends Migration
             $table->string('imei_2')->nullable();
             $table->foreign('order_id')->references('id')->on('orders');
             $table->foreign('product_id')->references('id')->on('products');
-            $table->timestamps();
+            //$table->softDeletes();
+            //$table->timestamps();
         });
     }
 

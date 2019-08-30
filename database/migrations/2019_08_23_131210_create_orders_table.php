@@ -24,7 +24,8 @@ class CreateOrdersTable extends Migration
             $table->string('billing_address');
             $table->string('status')->default('Pending');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->timestamps();
+            //$table->softDeletes();
+            //$table->timestamps();
         });
     }
 
