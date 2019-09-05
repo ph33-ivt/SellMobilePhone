@@ -178,6 +178,19 @@ class CartController extends Controller
         //return redirect()->route('view-cart');
     }
 
+    public function checkout(Request $request) {
+        $oldCart = Session::has('cart') ? Session::get('cart') : null;
+        if ($oldCart == null) {
+            return response()->json(['message' => 'Cart is empty!',], 200);
+        }
+        $cart = new Cart($oldCart);
+
+        dd($cart);exit;
+        //create user if not exits
+        // create order of user
+        // create order details
+    }
+
     /**
      * Show the form for creating a new resource.
      *

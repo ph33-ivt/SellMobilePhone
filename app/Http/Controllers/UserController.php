@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+    public function userSignIn() {
+
+    }
     /**
      * Display a listing of the resource.
      *

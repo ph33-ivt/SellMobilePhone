@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Brand;
 use App\Product;
 use Illuminate\Http\Request;
 
@@ -46,7 +47,8 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        $listBrand = Brand::orderBy('id')->get();
+        return view('product.product_detail', compact('listBrand'));
     }
 
     /**
