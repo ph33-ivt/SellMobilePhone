@@ -11,8 +11,10 @@ $factory->define(Product::class, function (Faker $faker) {
     $listBrandID = Brand::pluck('id');
     $warranties = [3, 6, 9, 12, 24, 36, 48, 60];
     $discount_percent = [0, 5/100, 10/100, 15/100, 20/100, 25/100, 30/100];
+    $listCategoryID = Category::pluck('id');
     return [
-        'category_id' => 1,
+        //'category_id' => 1,
+        'category_id' => $faker->randomElement($listCategoryID),
         'brand_id' => $faker->randomElement($listBrandID),
         'name' => $faker->name,
         'current_price' => rand(500000, 20000000),

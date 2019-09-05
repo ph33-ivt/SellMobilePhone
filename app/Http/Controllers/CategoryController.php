@@ -2,11 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Category;
+use App\Brand;
+use App\Product;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+
+    public function listAccessories() {
+        $listBrand = Brand::orderBy('id')->get();
+
+        $listProduct = Product::where('category_id', 2)->orderBy('current_price', 'DESC')->get();
+        $p = 'D:/ProgramFiles/XAMPP/XAMPP-V7.3.7/htdocs/laravel/SellMobilePhone/public/';
+        $path = 'img/products/accessories/400/';
+        $images = [];
+        if ($dh = opendir($path)) {
+            while (($title = readdir($dh)) !== false) {
+                if (preg_match('/([a-zA-Z0-9\.\-\_\\s\(\)]+)\.([a-zA-Z0-9]+)$/', $title, $m)) {
+                    //var_dump($m); die;
+                    //echo $title . '<br />';
+                    $images[] = $path.$title;
+                }
+            }
+        }
+        return view('category.accessories', compact('listBrand','listProduct', 'images'));
+    }
     /**
      * Display a listing of the resource.
      *
