@@ -1,6 +1,19 @@
 @extends('layouts.template')
 
 @section('content')
+    @if(session('success'))
+        <style>
+            .alert-success {text-align: center; font-size: 30px;}
+            .alert-success strong{color: darkorange;}
+            .alert-success .btnCloseMessage {color: black; margin-left: 20px;}
+            .alert-success .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}
+        </style>
+        <div class="alert alert-success">
+            <strong>{{session('success')}}</strong>
+            <span class="btnCloseMessage" onclick="this.parentElement.style.display='none';">&times;</span>
+        </div>
+    @endif
+
     @include ('layouts.slider')
 
     {{--<script src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
@@ -77,25 +90,25 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="single-promo promo1">
                         <i class="fa fa-refresh"></i>
-                        <p>30 Days return</p>
+                        <p>30 ngày đổi trả</p>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class="single-promo promo2">
                         <i class="fa fa-truck"></i>
-                        <p>Free shipping</p>
+                        <p>Phí giao hàng rẻ</p>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class="single-promo promo3">
                         <i class="fa fa-lock"></i>
-                        <p>Secure payments</p>
+                        <p>Bảo mật thông tin</p>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class="single-promo promo4">
                         <i class="fa fa-gift"></i>
-                        <p>New products</p>
+                        <p>Nhiều sản phẩm mới</p>
                     </div>
                 </div>
             </div>
@@ -197,9 +210,9 @@
                         <h2 class="product-wid-title">Top Sellers</h2>
                         <a href="" class="wid-view-more">View All</a>
                         <div class="single-wid-product">
-                            <a href="single-product.html"><img src="img/product-thumb-1.jpg" alt=""
+                            <a href="#product/id"><img src="img/product-thumb-1.jpg" alt=""
                                                                class="product-thumb"></a>
-                            <h2><a href="single-product.html">Sony Smart TV - 2015</a></h2>
+                            <h2><a href="#product/id">Sony Smart TV - 2015</a></h2>
                             <div class="product-wid-rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -213,9 +226,9 @@
                             </div>
                         </div>
                         <div class="single-wid-product">
-                            <a href="single-product.html"><img src="img/product-thumb-2.jpg" alt=""
+                            <a href="#product/id"><img src="img/product-thumb-2.jpg" alt=""
                                                                class="product-thumb"></a>
-                            <h2><a href="single-product.html">Apple new mac book 2015</a></h2>
+                            <h2><a href="#product/id">Apple new mac book 2015</a></h2>
                             <div class="product-wid-rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -229,9 +242,9 @@
                             </div>
                         </div>
                         <div class="single-wid-product">
-                            <a href="single-product.html"><img src="img/product-thumb-3.jpg" alt=""
+                            <a href="#product/id"><img src="img/product-thumb-3.jpg" alt=""
                                                                class="product-thumb"></a>
-                            <h2><a href="single-product.html">Apple new i phone 6</a></h2>
+                            <h2><a href="#product/id">Apple new i phone 6</a></h2>
                             <div class="product-wid-rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -251,9 +264,9 @@
                         <h2 class="product-wid-title">Recently Viewed</h2>
                         <a href="#" class="wid-view-more">View All</a>
                         <div class="single-wid-product">
-                            <a href="single-product.html"><img src="img/product-thumb-4.jpg" alt=""
+                            <a href="#product/id"><img src="img/product-thumb-4.jpg" alt=""
                                                                class="product-thumb"></a>
-                            <h2><a href="single-product.html">Sony playstation microsoft</a></h2>
+                            <h2><a href="#product/id">Sony playstation microsoft</a></h2>
                             <div class="product-wid-rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -267,9 +280,9 @@
                             </div>
                         </div>
                         <div class="single-wid-product">
-                            <a href="single-product.html"><img src="img/product-thumb-1.jpg" alt=""
+                            <a href="#product/id"><img src="img/product-thumb-1.jpg" alt=""
                                                                class="product-thumb"></a>
-                            <h2><a href="single-product.html">Sony Smart Air Condtion</a></h2>
+                            <h2><a href="#product/id">Sony Smart Air Condtion</a></h2>
                             <div class="product-wid-rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -283,9 +296,9 @@
                             </div>
                         </div>
                         <div class="single-wid-product">
-                            <a href="single-product.html"><img src="img/product-thumb-2.jpg" alt=""
+                            <a href="#product/id"><img src="img/product-thumb-2.jpg" alt=""
                                                                class="product-thumb"></a>
-                            <h2><a href="single-product.html">Samsung gallaxy note 4</a></h2>
+                            <h2><a href="#product/id">Samsung gallaxy note 4</a></h2>
                             <div class="product-wid-rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -305,9 +318,9 @@
                         <h2 class="product-wid-title">Top New</h2>
                         <a href="#" class="wid-view-more">View All</a>
                         <div class="single-wid-product">
-                            <a href="single-product.html"><img src="img/product-thumb-3.jpg" alt=""
+                            <a href="#product/id"><img src="img/product-thumb-3.jpg" alt=""
                                                                class="product-thumb"></a>
-                            <h2><a href="single-product.html">Apple new i phone 6</a></h2>
+                            <h2><a href="#product/id">Apple new i phone 6</a></h2>
                             <div class="product-wid-rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -321,9 +334,9 @@
                             </div>
                         </div>
                         <div class="single-wid-product">
-                            <a href="single-product.html"><img src="img/product-thumb-4.jpg" alt=""
+                            <a href="#product/id"><img src="img/product-thumb-4.jpg" alt=""
                                                                class="product-thumb"></a>
-                            <h2><a href="single-product.html">Samsung gallaxy note 4</a></h2>
+                            <h2><a href="#product/id">Samsung gallaxy note 4</a></h2>
                             <div class="product-wid-rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -337,9 +350,9 @@
                             </div>
                         </div>
                         <div class="single-wid-product">
-                            <a href="single-product.html"><img src="img/product-thumb-1.jpg" alt=""
+                            <a href="#product/id"><img src="img/product-thumb-1.jpg" alt=""
                                                                class="product-thumb"></a>
-                            <h2><a href="single-product.html">Sony playstation microsoft</a></h2>
+                            <h2><a href="#product/id">Sony playstation microsoft</a></h2>
                             <div class="product-wid-rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>

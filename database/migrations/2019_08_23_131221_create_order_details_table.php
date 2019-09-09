@@ -20,9 +20,9 @@ class CreateOrderDetailsTable extends Migration
             $table->decimal('amount', 10, 2);
             $table->decimal('discount_amount', 10, 2);
             $table->tinyInteger('quantity');
-            $table->string('serial');
+            /*$table->string('serial');
             $table->string('imei_1');
-            $table->string('imei_2')->nullable();
+            $table->string('imei_2')->nullable();*/
             $table->foreign('order_id')->references('id')->on('orders');
             $table->foreign('product_id')->references('id')->on('products');
             //$table->softDeletes();

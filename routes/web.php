@@ -21,7 +21,8 @@ Route::get('/phone/{brand_name}', 'BrandController@listProductOfBrand')->name('l
 Route::get('/accessories', 'CategoryController@listAccessories')->name('list-accessories'); // danh sach cac phu kien
 
 Route::get('/product/{id}', 'ProductController@show')->name('product-detail'); // xem thong tin cua 1 san pham
-Route::get('/product/search/', 'ProductController@search')->name('search'); // tim kiem san pham
+
+Route::get('/search', 'SearchController@searchByProductName')->name('search'); // tim kiem san pham
 
 Route::get('/cart', 'CartController@index')->name('view-cart'); // xem gio hang
 Route::get('/add-to-cart/{product_id}', 'CartController@addProductToCart')->name('add-product-to-cart'); // them san pham vao gio hang
@@ -29,7 +30,9 @@ Route::get('/remove-from-cart/{product_id}', 'CartController@removeProductFromCa
 //Route::delete('/remove-from-cart/{product_id}', 'CartController@removeProductFromCart')->name('remove-product-from-cart');// xoa san pham khoi gio hang
 Route::get('/update-cart', 'CartController@updateCart')->name('update-cart'); // cap nhat gio hang
 //Route::put('/update-cart', 'CartController@updateCart')->name('update-cart'); // cap nhat gio hang
-Route::put('/checkout', 'CartController@checkout')->name('checkout'); // gui don dat hang
+Route::get('/checkout', 'CartController@checkout')->name('checkout'); // gui don dat hang
+
+Route::post('/feedback', 'FeedbackController@sendFeedback')->name('feedback'); //gui email gop y
 
 Route::get('/sign-up', 'UserController@create')->name('form-register'); // goi form dang ky
 Route::post('/sign-up', 'UserController@store')->name('create-user'); // tao nguoi dung moi

@@ -17,7 +17,7 @@ class CreateOrdersTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->date('order_date');
-            $table->date('ship_date');
+            $table->date('ship_date')->nullable();
             $table->decimal('ship_amount', 10, 2)->default(0.00);
             $table->string('phone_receiver');
             $table->string('ship_address');

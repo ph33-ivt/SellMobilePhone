@@ -2,12 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Brand;
-use App\Product;
+use App\Http\Requests\FeedbackRequest;
+use App\Mail\FeedbackMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
-class ProductController extends Controller
+class FeedbackController extends Controller
 {
+    public function sendFeedback(FeedbackRequest $request) {
+        $data = $request->except('_token');
+        //dd($data);exit;
+
+        //php artisan make:mail FeedbackMail
+        //code send email
+        Mail::to('support@phonestore.com')->send(new FeedbackMail($data['user_email'], $data['message']));
+        return redirect()->back()->with('success', 'Tin nhắn của bạn đã được gửi!');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -42,25 +52,21 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product, $id)
+    public function show($id)
     {
-        $listBrand = Brand::orderBy('id')->get();
-        $product = Product::find($id);
-        $listProduct = Product::where('brand_id', $product->brand_id)->orderBy('current_price')->take(7)->get();
-        //dd($product->description);
-        return view('product.product_detail', compact('listBrand', 'product', 'listProduct'));
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit($id)
     {
         //
     }
@@ -69,10 +75,10 @@ class ProductController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Product  $product
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -80,10 +86,10 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Product  $product
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
         //
     }

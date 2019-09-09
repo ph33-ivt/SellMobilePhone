@@ -33,7 +33,7 @@
                         } else {
                             alert('Đã thêm vào giỏ hàng!');
                             //console.log(num, pay);
-                            {{--console.log(data);--}}
+                                {{--console.log(data);--}}
 
                             var num = data.num_price_product[0];
                             var pay = data.num_price_product[1];
@@ -53,16 +53,26 @@
 
         });
     </script>
+
     <div class="single-product-area">
         <div class="zigzag-bottom"></div>
         <div class="container">
             <div class="row">
+                @if($listProduct->total() == 0)
+                <div style="text-align: center; color: orange; font-size: 30px">
+                    <p>Không tìm thấy sản phẩm!</p>
+                </div>
+                @else
                 @foreach($listProduct as $product)
                     <div class="col-md-3 col-sm-6">
                         <div class="single-shop-product">
                             <div class="product-upper">
                                 <a href="{{route('product-detail', $product->id)}}">
-                                    <img src="{{asset($images[array_rand($images,1)])}}" alt="{{$product->name}}">
+                                    @if($images == [])
+                                        <img src="#" alt="{{$product->name}}">
+                                    @else
+                                        <img src="{{asset($images[array_rand($images,1)])}}" alt="{{$product->name}}">
+                                    @endif
                                 </a>
                             </div>
                             <div class="product-name">
@@ -84,36 +94,11 @@
                         </div>
                     </div>
                 @endforeach
+                @endif
             </div>
             <div style="text-align: center">
-            {{ $listProduct->links()}}
+                {{ $listProduct->links()}}
             </div>
-
-            {{--<div class="row">
-                <div class="col-md-12">
-                    <div class="product-pagination text-center">
-                        <nav>
-                            <ul class="pagination">
-                                <li>
-                                    <a href="#" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                <li><a href="#">1</a></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">4</a></li>
-                                <li><a href="#">5</a></li>
-                                <li>
-                                    <a href="#" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>--}}
         </div>
     </div>
 @endsection
