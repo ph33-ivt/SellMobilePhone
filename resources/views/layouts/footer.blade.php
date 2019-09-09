@@ -47,10 +47,17 @@
                 <div class="footer-newsletter">
                     <h2 class="footer-wid-title">Góp ý</h2>
                     <div class="contact-us-form">
-                        <form action="#">
-                            <textarea rows="4" placeholder="Type your message"></textarea>
-                            <input type="email" placeholder="Enter your email">
-                            <input type="submit" value="Send Message">
+                        <form method="post" action="{{route('feedback')}}">
+                            @csrf
+                            @if($errors->has('message'))
+                                <p style="color: red;">{{$errors->first('content')}}</p>
+                            @endif
+                            <textarea rows="4" name="message" placeholder="Nội dung tin nhắn ..."></textarea>
+                            @if($errors->has('user_email'))
+                                <p style="color: red;">{{$errors->first('user_email')}}</p>
+                            @endif
+                            <input type="email" name="user_email" placeholder="Email của bạn?">
+                            <button type="submit">Gửi phản hồi</button>
                         </form>
                     </div>
                 </div>
@@ -83,6 +90,10 @@
 {{--<script src="https://code.jquery.com/jquery.min.js"></script>--}}
 {{--<script src="js/jquery.min.js"></script>--}}
 <script src="{{asset('js/jquery.min.js')}}"></script>
+
+<!-- Input mask -->
+<script src="{{asset('js/inputmask.min.js')}}"></script>
+<script src="{{asset('js/jquery.inputmask.min.js')}}"></script>
 
 <!-- Bootstrap JS form CDN -->
 {{--<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>--}}

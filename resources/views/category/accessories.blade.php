@@ -86,6 +86,10 @@
                 @endforeach
             </div>
 
+            <div style="text-align: center">
+                {{ $listProduct->links()}}
+            </div>
+
             {{--<div class="row">
                 <div class="col-md-12">
                     <div class="product-pagination text-center">

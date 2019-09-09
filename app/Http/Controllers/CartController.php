@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Brand;
+use App\Order;
+use App\OrderDetail;
 use App\Product;
 use App\Cart;
+use App\User;
+use Dotenv\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Session;
 use Illuminate\Support\Facades\Input;
 
@@ -39,7 +44,6 @@ class CartController extends Controller
                 //var_dump($k);
 //                var_dump($v['sl']);
 //                var_dump($v['sp']['current_price']);
-//                var_dump($v['sp']['discount_percent']);
 
                 $total += $v['sl'] * $v['sp']['current_price'];
                 $discount += $v['sl'] * ($v['sp']['current_price'] * $v['sp']['discount_percent']);
@@ -114,12 +118,12 @@ class CartController extends Controller
         }
 
         $cart = new Cart($oldCart);
-        $listQty= array();
+        $listQty = array();
         foreach ($cart->items as $product_id => $sub_key) {
             $listQty[$product_id] = $request->input('qty-product-' . $product_id);
         }
         //var_dump($listQty);
-        foreach ($listQty as $product_id=>$qty) {
+        foreach ($listQty as $product_id => $qty) {
             if ($id == $product_id) {
                 $cart->remove($id, $qty);
             }
@@ -133,7 +137,6 @@ class CartController extends Controller
             'num_price_product' => $result,
         ], 200);*/
         return redirect()->back();
-        //return redirect()->route('view-cart');
     }
 
     public function updateCart(Request $request)
@@ -167,28 +170,220 @@ class CartController extends Controller
         $c = $request->session()->get('cart');
         //dd($c);
 
-        $result = [sizeof($c->items), $c->totalPrice, $c->items];
-
-        /*return response()->json([
+        /*$result = [sizeof($c->items), $c->totalPrice, $c->items];
+        return response()->json([
             'message' => 'The cart has been updated!',
             'num_price_product' => $result,
         ], 200);*/
 
         return redirect()->back();
-        //return redirect()->route('view-cart');
     }
 
-    public function checkout(Request $request) {
+    public function checkout(Request $request)
+    {
         $oldCart = Session::has('cart') ? Session::get('cart') : null;
         if ($oldCart == null) {
             return response()->json(['message' => 'Cart is empty!',], 200);
         }
         $cart = new Cart($oldCart);
+        //dd($cart->items);exit;
+        /*foreach ($cart->items as $product_id => $product) {
+            echo $product_id .': '. $product['qty'] ."<br>";
+            dd($product['item']->name);
+        }exit;*/
 
-        dd($cart);exit;
-        //create user if not exits
-        // create order of user
-        // create order details
+        $info = $request->except('_token'); // $abcxyz = $request->input('input_name'); ...
+        //dd($info);exit;
+        //dd(sizeof($info));exit;
+
+        $niceNames = array(
+            'name' => 'Họ và tên người đặt hàng',
+            'address' => 'Địa chỉ người đặt hàng',
+            'phone' => 'Số điện thoại',
+            'receiver-name' => 'Họ và tên người nhận hàng',
+            'receiver-address' => 'Địa chỉ người nhận hàng',
+            'receiver-phone' => 'Số điện thoại',
+        );
+        $messages = [
+            'required' => ':attribute không được bỏ trống!',
+            'unique' => ':attribute đã tồn tại, vui lòng đăng nhập hoặc kiểm tra lại',
+            'email' => 'Email chưa đúng định dạng (name@domain.com)',
+            'regex' => ':attribute không đúng định dạng (0xxx xxx xxx)'
+        ];
+        $user_rule = [
+            'name' => 'required|string|max:255',
+            'address' => 'required|string',
+            'phone' => 'required|regex:/(0)(\d{3})(\s)?(\d{3})(\s)?(\d{3})/|unique:users',
+            'email' => 'nullable|email|max:255|unique:users',
+        ];
+        $receiver_rule = [
+            'receiver-name' => 'required|string|max:255',
+            'receiver-address' => 'required',
+            'receiver-phone' => 'required|regex:/(0)(\d{3})(\s)?(\d{3})(\s)?(\d{3})/',
+            'receiver-email' => 'nullable|email|max:255',
+        ];
+        $rule = array_merge($user_rule, $receiver_rule);
+
+        $validator = \Validator::make($info, $rule, $messages);
+        $validator->setAttributeNames($niceNames);
+
+        $validator_user = \Validator::make($info, $user_rule, $messages);
+        $validator_user->setAttributeNames($niceNames);
+
+        //$error_message = $validator_user->errors()->messages();
+        //dd($error_message);
+
+        $user = Session::has('user') ? Session::get('user') : null;
+
+        //dd(sizeof($info));
+
+        if ($user === null) {
+            if (sizeof($info) == 6) {
+                if ($validator_user->fails()) {
+                    return redirect()->back()->withErrors($validator_user->errors())->withInput();
+                }
+                /*Create session user*/
+                $this->createSessionUser($request, $info['name'], $info['address'], $info['phone'], $info['email']);
+
+                DB::beginTransaction();
+                try {
+                    $this->createUsers($info['name'], $info['address'], $info['phone'], $info['email']);
+                    $insertedUserID = User::where('phone', $info['phone'])->first();
+
+                    $this->createOrders($insertedUserID['id'], $info['phone'], $info['address'], $info['address']);
+
+                    $resultOrder = Order::orderBy('id', 'DESC')->first();
+                    $insertedOrderId = $resultOrder->id;
+
+                    foreach ($cart->items as $product_id => $value) {
+                        $amount = $value['qty'] * $value['item']->current_price;
+                        $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
+                        $this->createOrderDetails($insertedOrderId, $product_id, $amount, $discount_amount, $value['qty']);
+                    }
+
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    throw new Exception($e->getMessage());
+                }
+                //echo 'Đặt hàng, nhận hàng và thanh toán';
+
+            } else {
+                if ($validator->fails()) {
+                    return redirect()->back()->withErrors($validator->errors())->withInput();
+                }
+                /*Create session user*/
+                $this->createSessionUser($request, $info['name'], $info['address'], $info['phone'], $info['email']);
+
+                DB::beginTransaction();
+                try {
+                    $this->createUsers($info['name'], $info['address'], $info['phone'], $info['email']);
+                    $insertedUserID = User::where('phone', $info['phone'])->first();
+
+                    if ($info['payment-check'] == 'user_pay') {
+                        $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['address']);
+                        $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+
+                        foreach ($cart->items as $product_id => $value) {
+                            $amount = $value['qty'] * $value['item']->current_price;
+                            $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
+                            $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+                        }
+                        //echo 'Đặt hàng cho người khác và thanh toán';
+                    }
+                    if ($info['payment-check'] == 'receiver_pay') {
+
+                        $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['receiver-address']);
+                        $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+
+                        foreach ($cart->items as $product_id => $value) {
+                            $amount = $value['qty'] * $value['item']->current_price;
+                            $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
+                            $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+                        }
+                        //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
+                    }
+                    DB::commit();
+                }catch (\Exception $e) {
+                    DB::rollback();
+                    throw new Exception($e->getMessage());
+                }
+            }
+        } else {
+            $sessionUser = $request->session()->get('user');
+            $insertedUserID = User::where('phone', $sessionUser['user_phone'])->first();
+
+            if (sizeof($info) == 6) {
+                echo 'Đặt hàng, nhận hàng và thanh toán';
+            } else {
+                if ($validator->fails()) {
+                    return redirect()->back()->withErrors($validator->errors())->withInput();
+                }
+                if ($info['payment-check'] == 'user_pay') {
+                    echo 'Đặt hàng cho người khác và thanh toán';
+                }
+                else {
+                    echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
+                }
+                /*if ($info['payment-check'] == 'receiver_pay') {
+                    echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
+                }*/
+            }
+        }
+
+        //$request->session()->forget('cart');
+        /*$c = $request->session()->get('cart');
+        dd($c);*/
+
+        //return redirect()->route('homepage');
+        //return response()->json(['message' => 'Đặt hàng thành công!',], 200);
+    }
+
+    public function createSessionUser($request, $name, $address, $phone, $email) {
+        $u = array();
+        $u['user_name'] = $name;
+        $u['user_address'] = $address;
+        $u['user_phone'] = $phone;
+        $u['user_email'] = $email;
+        $request->session()->put('user', $u);
+    }
+
+    public function createUsers($name, $address, $phone, $email)
+    {
+        $dataUser = [
+            'username' => str_replace(' ', '', $phone),
+            'password' => sha1(str_replace(' ', '', $phone)),
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'address' => $address,
+        ];
+        User::insert($dataUser);
+    }
+
+    public function createOrders($userId, $phoneReceiver, $shipAddress, $billAddress)
+    {
+        $dataOrder = [
+            'user_id' => $userId,
+            'order_date' => now(),
+            'phone_receiver' => $phoneReceiver,
+            'ship_address' => $shipAddress,
+            'billing_address' => $billAddress,
+            'status' => 'Đang xữ lý',
+        ];
+        Order::insert($dataOrder);
+    }
+
+    public function createOrderDetails($orderId, $productId, $amount, $discountAmount, $quantity)
+    {
+        $dataOrderDetail = [
+            'order_id' => $orderId,
+            'product_id' => $productId,
+            'amount' => $amount,
+            'discount_amount' => $discountAmount,
+            'quantity' => $quantity,
+        ];
+        OrderDetail::insert($dataOrderDetail);
     }
 
     /**
@@ -196,7 +391,8 @@ class CartController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public
+    function create()
     {
         //
     }
@@ -207,7 +403,8 @@ class CartController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public
+    function store(Request $request)
     {
         //
     }
@@ -218,7 +415,8 @@ class CartController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public
+    function show($id)
     {
         //
     }
@@ -229,7 +427,8 @@ class CartController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public
+    function edit($id)
     {
         //
     }
@@ -241,7 +440,8 @@ class CartController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public
+    function update(Request $request, $id)
     {
         //
     }
@@ -252,7 +452,8 @@ class CartController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public
+    function destroy($id)
     {
         //
     }

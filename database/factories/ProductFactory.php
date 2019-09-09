@@ -17,7 +17,7 @@ $factory->define(Product::class, function (Faker $faker) {
         'category_id' => $faker->randomElement($listCategoryID),
         'brand_id' => $faker->randomElement($listBrandID),
         'name' => $faker->name,
-        'current_price' => rand(500000, 20000000),
+        'current_price' => rand(100, 500),
         'discount_percent' => $faker->randomElement($discount_percent),
         'description' => $faker->text,
         'warranty_period' => $faker->randomElement($warranties),

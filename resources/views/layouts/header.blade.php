@@ -7,10 +7,11 @@
     <title>Phone Store</title>
 
     <!-- Google Fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,700,600' rel='stylesheet'
+    {{--<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,700,600' rel='stylesheet'
           type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Raleway:400,100' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Raleway:400,100' rel='stylesheet' type='text/css'>--}}
+
     <base href="{{asset('')}}">
     <!-- Bootstrap -->
     {{--<link rel="stylesheet" href="css/bootstrap.min.css">--}}
@@ -100,7 +101,7 @@
             </div>
             <div class="col-sm-8 form_search">
                 <form action="{{route('search')}}" method="get" id="search_form">
-                    <select class="search_phone">
+                    {{--<select class="search_phone">
                         <option>-- Chọn hãng điện thoại --</option>
                         @foreach($listBrand as $brand)
                             @if($brand->name == 'N/A')
@@ -117,8 +118,8 @@
                         <option>Từ 3 triệu đến 7 triệu</option>
                         <option>Từ 7 triệu đến 10 triệu</option>
                         <option>Trên 10 triệu</option>
-                    </select>
-                    <input type="text" name="q" value="{{old('q')}}">
+                    </select>--}}
+                    <input type="text" name="q" value="{{old('q')}}" autofocus>
                     <button type="submit"><i class="fa fa-search"></i></button>
                 </form>
             </div>

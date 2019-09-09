@@ -1,6 +1,59 @@
 @extends('layouts.template')
 
 @section('content')
+    <script>
+        $(document).ready(function () {
+            @foreach($listProduct as $product)
+            $("button#btnAddToCart{{$product->id}}").click(function (e) {
+                e.preventDefault();
+                //alert('Its working!');
+                var product_id = "{{$product->id}}";
+                var url = "{{route('add-product-to-cart', $product->id)}}";
+                //alert(product_id);
+                //console.log(url);
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    url: url,
+                    data: {product_id: product_id},
+                    dataType: "json",
+                    success: function (data) {
+                        //console.log(data);
+                        //console.log((data.num_price_product).length);
+                        //console.log(data.num_price_product[0]);
+                        //console.log(data.num_price_product[1]);
+                        if (data.message == 'The product already exists!') {
+                            alert('Sản phẩm đã có trong giỏ hàng!');
+                        } else {
+                            alert('Đã thêm vào giỏ hàng!');
+                            //console.log(num, pay);
+                                {{--console.log(data);--}}
+
+                            var num = data.num_price_product[0];
+                            var pay = data.num_price_product[1];
+
+                            $('div.cart-info-count a').html(num + ' sản phẩm');
+                            $('div.cart-info-value a').html(
+                                pay.toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                            );
+                        }
+                    },
+                    error: function (error) {
+                        console.log('Error:', data);
+                    }
+                });
+            });
+            @endforeach
+
+        });
+    </script>
+
     <div class="single-product-area">
         <div class="zigzag-bottom"></div>
         <div class="container">
@@ -12,7 +65,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h2 class="product-name">Sony Smart TV - 2015</h2>
+                    <h2 class="product-name">{{$product->name}}</h2>
                     <div class="product-images">
                         <div class="product-main-img">
                             <img src="img/product-2.jpg" alt="">
@@ -35,19 +88,17 @@
                         <i class="fa fa-star"></i>
                     </div>
                     <div class="product-inner-price" style="margin-top: 10px;">
-                        <ins>$700.00</ins>
-                        <del>$100.00</del>
+                        <span style="color: red;">{{'(-'. ($product->discount_percent * 100) . '%)'}}</span>
+                        <ins>{{number_format((float)($product->current_price - ($product->current_price * $product->discount_percent)),2,",", ".") .' VNĐ'}}</ins>
+                        <del>{{number_format((float)$product->current_price,2,",", ".") . ' VNĐ'}}</del>
                     </div>
-                    <button class="add_to_cart_button" type="submit"
-                            style="position: absolute; top: 10px; right: 0;">
-                        <i class="fa fa-plus"></i> Thêm vào giỏ hàng
+                    <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$product->id}}"
+                            style="margin-bottom: 25px;">
+                        <i class="fa fa-shopping-cart"> Thêm vào giỏ hàng</i>
                     </button>
                     <div class="product-inner">
                         <h3>Thông số kỹ thuật</h3>
-                        <p>Mauris placerat vitae lorem gravida viverra. Mauris in fringilla ex.
-                            Nulla facilisi. Etiam scelerisque tincidunt quam facilisis lobortis.
-                            In malesuada pulvinar neque a consectetur. Nunc aliquam gravida
-                            purus, non malesuada sem accumsan in. Morbi vel sodales libero.</p>
+                        <p>{{$product->description}}</p>
                     </div>
                 </div>
 
@@ -56,7 +107,20 @@
                     <div class="submit-review">
                         <h4><b>Full Name</b>
                             (Đánh giá:
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
                             <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>)
+                        </h4>
+                        <div>
+                            <p>jbdsvjnsd ffnsdm,f sbb vjksdb mbssd csdcnkvsd
+                                asknksdsmd,nkdsncascjvbdvsdnv
+                                ạdvbnkl</p>
+                        </div>
+                        <h4><b>Full Name</b>
+                            (Đánh giá:
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
                             <i class="fa fa-star"></i>
                             <i class="fa fa-star"></i>
                             <i class="fa fa-star"></i>
@@ -69,23 +133,10 @@
                         </div>
                         <h4><b>Full Name</b>
                             (Đánh giá:
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>)
-                        </h4>
-                        <div>
-                            <p>jbdsvjnsd ffnsdm,f sbb vjksdb mbssd csdcnkvsd
-                                asknksdsmd,nkdsncascjvbdvsdnv
-                                ạdvbnkl</p>
-                        </div>
-                        <h4><b>Full Name</b>
-                            (Đánh giá:
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
                             <i class="fa fa-star"></i>)
                         </h4>
                         <div>
@@ -99,9 +150,9 @@
                     <form class="submit-review">
                         <div class="rating-post">
                             <span>Đánh giá của bạn:</span>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
+                            <i  style="color: #ffc808" class="fa fa-star"></i>
                             <i class="fa fa-star"></i>
                             <i class="fa fa-star"></i>
                         </div>
@@ -125,107 +176,32 @@
                     <div role="tabpanel" class="tab-pane fade in active" id="same-brand">
                         <div class="latest-product">
                             <div class="product-carousel">
-                                <div class="single-product">
-                                    <div class="product-f-image">
-                                        <img src="img/product-1.jpg" alt="">
-                                        <div class="product-hover">
-                                            <a href="" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i> Add
-                                                to cart</a>
-                                            <a href="" class="view-details-link"><i class="fa fa-link"></i> See details</a>
+                                @foreach($listProduct as $p)
+                                    <div class="single-product">
+                                        <div class="product-f-image">
+                                            <img src="img/product-1.jpg" alt="">
+                                            <div class="product-hover">
+                                                {{--<a href="" class="add-to-cart-link">
+                                                    <i class="fa fa-shopping-cart"></i> Add to cart</a>--}}
+                                                <button class="btn-add-to-cart" id="btnAddToCart{{$p->id}}">
+                                                    <i class="fa fa-shopping-cart"> Thêm vào giỏ hàng</i>
+                                                </button>
+                                                <a href="{{route('product-detail', $p->id)}}" class="view-details-link">
+                                                    <i class="fa fa-link"> Xem chi tiết</i>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <h2><a href="">{{$p->name}}</a></h2>
+
+                                        <div class="product-carousel-price">
+                                            <span style="color: red;">{{'(-'. ($p->discount_percent * 100) . '%)'}}</span>
+                                            <ins>{{number_format((float)($p->current_price - ($p->current_price * $p->discount_percent)),2,",", ".") .' VNĐ'}}</ins>
+                                            <br>
+                                            <del>{{number_format((float)$p->current_price,2,",", ".") . ' VNĐ'}}</del>
                                         </div>
                                     </div>
-
-                                    <h2><a href="">Sony Smart TV - 2015</a></h2>
-
-                                    <div class="product-carousel-price">
-                                        <ins>$700.00</ins>
-                                        <del>$100.00</del>
-                                    </div>
-                                </div>
-                                <div class="single-product">
-                                    <div class="product-f-image">
-                                        <img src="img/product-2.jpg" alt="">
-                                        <div class="product-hover">
-                                            <a href="" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i> Add
-                                                to cart</a>
-                                            <a href="" class="view-details-link"><i class="fa fa-link"></i> See details</a>
-                                        </div>
-                                    </div>
-
-                                    <h2><a href="">Apple new mac book 2015 March :P</a></h2>
-                                    <div class="product-carousel-price">
-                                        <ins>$899.00</ins>
-                                        <del>$999.00</del>
-                                    </div>
-                                </div>
-                                <div class="single-product">
-                                    <div class="product-f-image">
-                                        <img src="img/product-3.jpg" alt="">
-                                        <div class="product-hover">
-                                            <a href="" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i> Add
-                                                to cart</a>
-                                            <a href="" class="view-details-link"><i class="fa fa-link"></i> See details</a>
-                                        </div>
-                                    </div>
-
-                                    <h2><a href="">Apple new i phone 6</a></h2>
-
-                                    <div class="product-carousel-price">
-                                        <ins>$400.00</ins>
-                                        <del>$425.00</del>
-                                    </div>
-                                </div>
-                                <div class="single-product">
-                                    <div class="product-f-image">
-                                        <img src="img/product-4.jpg" alt="">
-                                        <div class="product-hover">
-                                            <a href="" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i> Add
-                                                to cart</a>
-                                            <a href="" class="view-details-link"><i class="fa fa-link"></i> See details</a>
-                                        </div>
-                                    </div>
-
-                                    <h2><a href="">Sony playstation microsoft</a></h2>
-
-                                    <div class="product-carousel-price">
-                                        <ins>$200.00</ins>
-                                        <del>$225.00</del>
-                                    </div>
-                                </div>
-                                <div class="single-product">
-                                    <div class="product-f-image">
-                                        <img src="img/product-4.jpg" alt="">
-                                        <div class="product-hover">
-                                            <a href="" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i> Add
-                                                to cart</a>
-                                            <a href="" class="view-details-link"><i class="fa fa-link"></i> See details</a>
-                                        </div>
-                                    </div>
-
-                                    <h2><a href="">Sony playstation microsoft</a></h2>
-
-                                    <div class="product-carousel-price">
-                                        <ins>$200.00</ins>
-                                        <del>$225.00</del>
-                                    </div>
-                                </div>
-                                <div class="single-product">
-                                    <div class="product-f-image">
-                                        <img src="img/product-4.jpg" alt="">
-                                        <div class="product-hover">
-                                            <a href="" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i> Add
-                                                to cart</a>
-                                            <a href="" class="view-details-link"><i class="fa fa-link"></i> See details</a>
-                                        </div>
-                                    </div>
-
-                                    <h2><a href="">Sony playstation microsoft</a></h2>
-
-                                    <div class="product-carousel-price">
-                                        <ins>$200.00</ins>
-                                        <del>$225.00</del>
-                                    </div>
-                                </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -272,7 +248,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="single-sidebar">
-                                    <h3 class="sidebar-title">iPhone</h3>
+                                    <h3 class="sidebar-title">Vsmart</h3>
                                     <div class="thubmnail-recent" style="position: relative;">
                                         <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
                                         <h2><a href="">Sony Smart TV - 2015</a></h2>
@@ -310,7 +286,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="single-sidebar">
-                                    <h3 class="sidebar-title">iPhone</h3>
+                                    <h3 class="sidebar-title">Xiaomi</h3>
                                     <div class="thubmnail-recent" style="position: relative;">
                                         <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
                                         <h2><a href="">Sony Smart TV - 2015</a></h2>

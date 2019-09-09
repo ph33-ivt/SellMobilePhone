@@ -19,8 +19,8 @@ $factory->define(OrderDetail::class, function (Faker $faker) {
         'discount_amount' => rand(50000, 500000),
         'quantity' => rand(1, 9),
         //'serial' => Str::random(10),
-        'serial' => $faker->regexify('[A-Za-z0-9]{10}'),
+        /*'serial' => $faker->regexify('[A-Za-z0-9]{10}'),
         'imei_1' => $faker->unique()->imei(),
-        'imei_2' => $faker->unique()->imei(),
+        'imei_2' => $faker->unique()->imei(),*/
     ];
 });

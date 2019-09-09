@@ -12,7 +12,7 @@ class CategoryController extends Controller
     public function listAccessories() {
         $listBrand = Brand::orderBy('id')->get();
 
-        $listProduct = Product::where('category_id', 2)->orderBy('current_price', 'DESC')->get();
+        $listProduct = Product::where('category_id', 2)->orderBy('current_price', 'DESC')->paginate(12);
         $p = 'D:/ProgramFiles/XAMPP/XAMPP-V7.3.7/htdocs/laravel/SellMobilePhone/public/';
         $path = 'img/products/accessories/400/';
         $images = [];
