@@ -119,7 +119,7 @@
                         <option>Từ 7 triệu đến 10 triệu</option>
                         <option>Trên 10 triệu</option>
                     </select>--}}
-                    <input type="text" name="q" value="{{old('q')}}" autofocus>
+                    <input type="text" name="q" value="{{\Request::get('q')}}" autofocus>
                     <button type="submit"><i class="fa fa-search"></i></button>
                 </form>
             </div>
@@ -175,3 +175,16 @@
         </div>
     </div>
 </div> <!-- End mainmenu area -->
+
+@if(session('success'))
+    <style>
+        .alert-success {text-align: center; font-size: 30px;}
+        .alert-success strong{color: darkorange;}
+        .alert-success .btnCloseMessage {color: black; margin-left: 20px;}
+        .alert-success .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}
+    </style>
+    <div class="alert alert-success">
+        <strong>{{session('success')}}</strong>
+        <span class="btnCloseMessage" onclick="this.parentElement.style.display='none';">&times;</span>
+    </div>
+@endif

@@ -1,19 +1,6 @@
 @extends('layouts.template')
 
 @section('content')
-    @if(session('success'))
-        <style>
-            .alert-success {text-align: center; font-size: 30px;}
-            .alert-success strong{color: darkorange;}
-            .alert-success .btnCloseMessage {color: black; margin-left: 20px;}
-            .alert-success .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}
-        </style>
-        <div class="alert alert-success">
-            <strong>{{session('success')}}</strong>
-            <span class="btnCloseMessage" onclick="this.parentElement.style.display='none';">&times;</span>
-        </div>
-    @endif
-
     @include ('layouts.slider')
 
     {{--<script src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
