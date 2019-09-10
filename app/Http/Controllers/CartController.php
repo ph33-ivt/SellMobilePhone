@@ -222,13 +222,16 @@ class CartController extends Controller
             'receiver-phone' => 'required|regex:/(0)(\d{3})(\s)?(\d{3})(\s)?(\d{3})/',
             'receiver-email' => 'nullable|email|max:255',
         ];
-        $rule = array_merge($user_rule, $receiver_rule);
 
+        $rule = array_merge($user_rule, $receiver_rule);
         $validator = \Validator::make($info, $rule, $messages);
         $validator->setAttributeNames($niceNames);
 
         $validator_user = \Validator::make($info, $user_rule, $messages);
         $validator_user->setAttributeNames($niceNames);
+
+        $validator_receiver = \Validator::make($info, $receiver_rule, $messages);
+        $validator_receiver->setAttributeNames($niceNames);
 
         //$error_message = $validator_user->errors()->messages();
         //dd($error_message);
@@ -237,76 +240,63 @@ class CartController extends Controller
 
         //dd(sizeof($info));
 
+//        dd($request->all());
         if ($user === null) {
             if (sizeof($info) == 6) {
                 if ($validator_user->fails()) {
                     return redirect()->back()->withErrors($validator_user->errors())->withInput();
                 }
-                /*Create session user*/
                 $this->createSessionUser($request, $info['name'], $info['address'], $info['phone'], $info['email']);
 
-                DB::beginTransaction();
-                try {
-                    $this->createUsers($info['name'], $info['address'], $info['phone'], $info['email']);
-                    $insertedUserID = User::where('phone', $info['phone'])->first();
+                $this->createUsers($info['name'], $info['address'], $info['phone'], $info['email']);
+                $insertedUserID = User::where('phone', $info['phone'])->first();
 
-                    $this->createOrders($insertedUserID['id'], $info['phone'], $info['address'], $info['address']);
+                $this->createOrders($insertedUserID['id'], $info['phone'], $info['address'], $info['address']);
 
-                    $resultOrder = Order::orderBy('id', 'DESC')->first();
-                    $insertedOrderId = $resultOrder->id;
+                $resultOrder = Order::orderBy('id', 'DESC')->first();
+                $insertedOrderId = $resultOrder->id;
+
+                foreach ($cart->items as $product_id => $value) {
+                    $amount = $value['qty'] * $value['item']->current_price;
+                    $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
+                    $this->createOrderDetails($insertedOrderId, $product_id, $amount, $discount_amount, $value['qty']);
+                }
+
+                //echo 'Đặt hàng, nhận hàng và thanh toán';
+
+            } else {
+
+                if ($validator->fails()) {
+                    return redirect()->back()->withErrors($validator->errors())->withInput();
+                }
+
+                $this->createSessionUser($request, $info['name'], $info['address'], $info['phone'], $info['email']);
+
+                $this->createUsers($info['name'], $info['address'], $info['phone'], $info['email']);
+                $insertedUserID = User::where('phone', $info['phone'])->first();
+
+                if ($info['payment-check'] == 'user_pay') {
+                    $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['address']);
+                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
 
                     foreach ($cart->items as $product_id => $value) {
                         $amount = $value['qty'] * $value['item']->current_price;
                         $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
-                        $this->createOrderDetails($insertedOrderId, $product_id, $amount, $discount_amount, $value['qty']);
+                        $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
                     }
-
-                    DB::commit();
-                } catch (\Exception $e) {
-                    DB::rollback();
-                    throw new Exception($e->getMessage());
+                    //echo 'Đặt hàng cho người khác và thanh toán';
                 }
-                //echo 'Đặt hàng, nhận hàng và thanh toán';
 
-            } else {
-                if ($validator->fails()) {
-                    return redirect()->back()->withErrors($validator->errors())->withInput();
-                }
-                /*Create session user*/
-                $this->createSessionUser($request, $info['name'], $info['address'], $info['phone'], $info['email']);
+                if ($info['payment-check'] == 'receiver_pay') {
+                    $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['receiver-address']);
+                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
 
-                DB::beginTransaction();
-                try {
-                    $this->createUsers($info['name'], $info['address'], $info['phone'], $info['email']);
-                    $insertedUserID = User::where('phone', $info['phone'])->first();
-
-                    if ($info['payment-check'] == 'user_pay') {
-                        $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['address']);
-                        $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
-
-                        foreach ($cart->items as $product_id => $value) {
-                            $amount = $value['qty'] * $value['item']->current_price;
-                            $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
-                            $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
-                        }
-                        //echo 'Đặt hàng cho người khác và thanh toán';
+                    foreach ($cart->items as $product_id => $value) {
+                        $amount = $value['qty'] * $value['item']->current_price;
+                        $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
+                        $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
                     }
-                    if ($info['payment-check'] == 'receiver_pay') {
-
-                        $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['receiver-address']);
-                        $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
-
-                        foreach ($cart->items as $product_id => $value) {
-                            $amount = $value['qty'] * $value['item']->current_price;
-                            $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
-                            $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
-                        }
-                        //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
-                    }
-                    DB::commit();
-                }catch (\Exception $e) {
-                    DB::rollback();
-                    throw new Exception($e->getMessage());
+                    //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
                 }
             }
         } else {
@@ -314,28 +304,55 @@ class CartController extends Controller
             $insertedUserID = User::where('phone', $sessionUser['user_phone'])->first();
 
             if (sizeof($info) == 6) {
-                echo 'Đặt hàng, nhận hàng và thanh toán';
+                $this->createOrders($insertedUserID['id'], $sessionUser['user_phone'], $sessionUser['user_address'], $sessionUser['user_address']);
+                $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+
+                foreach ($cart->items as $product_id => $value) {
+                    $amount = $value['qty'] * $value['item']->current_price;
+                    $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
+                    $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+                }
+                //echo 'Đặt hàng, nhận hàng và thanh toán';
             } else {
-                if ($validator->fails()) {
-                    return redirect()->back()->withErrors($validator->errors())->withInput();
+
+                if ($validator_receiver->fails()) {
+                    //dd($validator->errors());
+                    return redirect()->back()->withErrors($validator_receiver->errors())->withInput();
                 }
+
+                //dd($info['payment-check']);
+
                 if ($info['payment-check'] == 'user_pay') {
-                    echo 'Đặt hàng cho người khác và thanh toán';
+                    $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $sessionUser['user_address']);
+                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+
+                    foreach ($cart->items as $product_id => $value) {
+                        $amount = $value['qty'] * $value['item']->current_price;
+                        $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
+                        $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+                    }
+                    //echo 'Đặt hàng cho người khác và thanh toán';
                 }
-                else {
-                    echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
+
+                if ($info['payment-check'] == 'receiver_pay') {
+                    $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['receiver-address']);
+                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+
+                    foreach ($cart->items as $product_id => $value) {
+                        $amount = $value['qty'] * $value['item']->current_price;
+                        $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
+                        $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+                    }
+                    //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
                 }
-                /*if ($info['payment-check'] == 'receiver_pay') {
-                    echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
-                }*/
             }
         }
 
-        //$request->session()->forget('cart');
+        $request->session()->forget('cart');
         /*$c = $request->session()->get('cart');
         dd($c);*/
 
-        //return redirect()->route('homepage');
+        return redirect()->route('homepage')->with('success', 'Đặt hàng thành công!');
         //return response()->json(['message' => 'Đặt hàng thành công!',], 200);
     }
 
