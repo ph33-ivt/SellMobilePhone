@@ -19,18 +19,31 @@ class SearchController extends Controller
 
     }
 
-    public function searchByProductName(Request $request) {
+    public function searchProduct(Request $request)
+    {
         $listBrand = Brand::orderBy('id')->get();
 
         $searchValue = $request->only('q');
 
-        $listProduct = Product::where('name', 'LIKE', '%' . $searchValue['q'] . '%')->paginate(8)->appends(Input::except('page'));
+        if (is_numeric($searchValue['q'])) {
+            /*$listProduct = Product::where([
+                ['current_price', '>=', $searchValue['q'] - $searchValue['q'] * 0.2],
+                ['current_price', '<=', $searchValue['q'] + $searchValue['q'] * 0.2]
+            ]) ->paginate(8)->appends(Input::except('page'));*/
+
+            $listProduct = Product::whereRaw("current_price - (current_price * discount_percent) >= ?", array($searchValue['q'] - $searchValue['q'] * 0.2))
+                ->whereRaw('current_price - (current_price * discount_percent) <= ?', array($searchValue['q'] + $searchValue['q'] * 0.2))
+                ->paginate(8)->appends(Input::except('page'));
+
+
+        } else {
+            $listProduct = Product::where('name', 'LIKE', '%' . $searchValue['q'] . '%') ->paginate(8)->appends(Input::except('page'));
+        }
         //dd($listProduct->total());
 
-        if($listProduct->total() == 0) {
+        if ($listProduct->total() == 0) {
             return view('search.search', compact('listBrand', 'listProduct'));
-        }
-        else {
+        } else {
             $images = [];
             foreach ($listProduct as $product) {
                 //echo $product->category_id ."<br>";
@@ -42,26 +55,26 @@ class SearchController extends Controller
                 $brand = Brand::where('id', $product->brand_id)->first();
                 //dd($brand->id);
 
-                if($product->category_id = 2 || $brand->name == 'N/A') {
+                if ($product->category_id = 2 || $brand->name == 'N/A') {
                     $path = 'img\products\accessories\400\\';
                     if ($dh = opendir($path)) {
                         while (($title = readdir($dh)) !== false) {
                             if (preg_match('/([a-zA-Z0-9\.\-\_\\s\(\)]+)\.([a-zA-Z0-9]+)$/', $title, $m)) {
                                 //var_dump($m); die;
                                 //echo $title . '<br />';
-                                $images[] = $path.$title;
+                                $images[] = $path . $title;
                             }
                         }
                     }
                 }
-                if($product->category_id = 1 && $brand->name !== 'N/A') {
+                if ($product->category_id = 1 && $brand->name !== 'N/A') {
                     $path = 'img\products\\' . strtolower($brand->name) . '\400\\';
                     if ($dh = opendir($path)) {
                         while (($title = readdir($dh)) !== false) {
                             if (preg_match('/([a-zA-Z0-9\.\-\_\\s\(\)]+)\.([a-zA-Z0-9]+)$/', $title, $m)) {
                                 //var_dump($m); die;
                                 //echo $title . '<br />';
-                                $images[] = str_replace('\\','/',$path.$title);
+                                $images[] = str_replace('\\', '/', $path . $title);
                             }
                         }
                     }
@@ -73,23 +86,10 @@ class SearchController extends Controller
             }exit;*/
 
             //dd($images);
-            return view('search.search', compact('listBrand','listProduct', 'images'));
+            return view('search.search', compact('listBrand', 'listProduct', 'images'));
             /*return view('search.search', compact('listBrand','listProduct', 'images'),[
                 'search' => $listProduct->appends(Input::except('page'))
             ]);*/
-        }
-    }
-
-    public function searchByPrice(Request $request) {
-        $search = $request->only('q');
-        //dd($search['q']);
-        $listProduct = Product::where([
-            ['current_price * discount_percent', '>=',$search['q'] - $search['q']*0.25],
-            ['current_price * discount_percent', '<=',$search['q'] + $search['q']*0.25]
-        ])->get();
-        //dd($listProduct);
-        foreach ($listProduct as $product) {
-            echo $product->name ."<br>";
         }
     }
 
@@ -106,7 +106,7 @@ class SearchController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -117,7 +117,7 @@ class SearchController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -128,7 +128,7 @@ class SearchController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -139,8 +139,8 @@ class SearchController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -151,7 +151,7 @@ class SearchController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
