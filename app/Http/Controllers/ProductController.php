@@ -42,16 +42,22 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product, $id)
+    public function show($id)
     {
+        //dd($id);
         $listBrand = Brand::orderBy('id')->get();
-        $product = Product::find($id);
-        $listProduct = Product::where('brand_id', $product->brand_id)->orderBy('current_price')->take(7)->get();
+        $prd = Product::find($id);
+
+        $listProduct = Product::where([
+            ['brand_id', $prd->brand_id],
+            ['quantity', '>', 0]
+        ])->orderBy('current_price')->take(7)->get();
         //dd($product->description);
-        return view('product.product_detail', compact('listBrand', 'product', 'listProduct'));
+
+        return view('product.product_detail', compact('listBrand', 'prd', 'listProduct'));
     }
 
     /**

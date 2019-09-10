@@ -15,7 +15,10 @@ class BrandController extends Controller
             //echo $brand->id;
             //echo strtolower($brand->name);
             if(strtolower($brand->name) == $brand_name) {
-                $listProduct = Product::where('brand_id', $brand->id)->orderBy('current_price', 'DESC')->paginate(12);
+                $listProduct = Product::where([
+                    ['brand_id', $brand->id],
+                    ['quantity', '>', 0]
+                ])->orderBy('current_price', 'DESC')->paginate(12);
                 $path = 'img/products/' . strtolower($brand->name) .'/400/';
             }
         }
