@@ -60,7 +60,6 @@
             <div class="product-breadcroumb">
                 <a href="">Home</a>
                 <a href="">Category Name</a>
-                <a href="">Sony Smart TV - 2015</a>
             </div>
 
             <div class="row">
@@ -88,17 +87,17 @@
                         <i class="fa fa-star"></i>
                     </div>
                     <div class="product-inner-price" style="margin-top: 10px;">
-                        <span style="color: red;">{{'(-'. ($product->discount_percent * 100) . '%)'}}</span>
-                        <ins>{{number_format((float)($product->current_price - ($product->current_price * $product->discount_percent)),2,",", ".") .' VNĐ'}}</ins>
-                        <del>{{number_format((float)$product->current_price,2,",", ".") . ' VNĐ'}}</del>
+                        <span style="color: red;">{{'(-'. ($prd->discount_percent * 100) . '%)'}}</span>
+                        <ins>{{number_format((float)($prd->current_price - ($prd->current_price * $prd->discount_percent)),2,",", ".") .' VNĐ'}}</ins>
+                        <del>{{number_format((float)$prd->current_price,2,",", ".") . ' VNĐ'}}</del>
                     </div>
-                    <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$product->id}}"
+                    <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$prd->id}}"
                             style="margin-bottom: 25px;">
                         <i class="fa fa-shopping-cart"> Thêm vào giỏ hàng</i>
                     </button>
                     <div class="product-inner">
                         <h3>Thông số kỹ thuật</h3>
-                        <p>{{$product->description}}</p>
+                        <p>{{$prd->description}}</p>
                     </div>
                 </div>
 
@@ -165,7 +164,7 @@
             <div role="tabpanel">
                 <ul class="product-tab" role="tablist">
                     <li role="presentation" class="active">
-                        <a href="#same-brand" aria-controls="same-brand" role="tab" data-toggle="tab">Cùng hãng</a>
+                        <a href="#same-brand" aria-controls="same-brand" role="tab" data-toggle="tab">Cùng loại</a>
                     </li>
                     <li role="presentation">
                         <a href="#same-price" aria-controls="same-price" role="tab" data-toggle="tab">Mức giá tương

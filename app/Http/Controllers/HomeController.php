@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Brand;
+use App\OrderDetail;
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -28,6 +30,24 @@ class HomeController extends Controller
         /*$listBrandId = Brand::pluck('id');*/
         $listBrand = Brand::orderBy('id')->get();
 
+        $topNewProducts = Product::orderBy('date_create', 'DESC')->take(3)->get();
+        /*dd($topNewProducts->first());
+        dd(count($topNewProducts));
+        dd($topNewProducts->count());
+        dd($topNewProducts->isEmpty());
+        dd($topNewProducts->isNotEmpty());*/
+
+        $topSaleProducts = Product::orderBy('discount_percent', 'DESC')->take(3)->get();
+
+
+        $topSell = OrderDetail::selectRaw('product_id, sum(quantity) as qty')
+            ->groupBy('product_id') ->orderBy('qty', 'desc')->take(3)->get();
+
+        $topSellProduct = array();
+        foreach ($topSell as $v) {
+            $topSellProduct[] = Product::where('id', $v->product_id)->get();
+        }
+
         /*$a = array();
         foreach ($listBrand as $brand) {
             $a[] = (object)['id' => $brand->id, 'name' => $brand->name];
@@ -49,7 +69,10 @@ class HomeController extends Controller
 
         foreach ($listBrand as $brand) {
             /*$listProduct[] = $brand->name;*/
-            $listProduct[] = Product::where('brand_id', $brand->id)->orderBy('current_price')->take(7)->get();
+            $listProduct[] = Product::where([
+                ['brand_id', $brand->id],
+                ['quantity', '>', 0],
+            ])->orderBy('current_price', 'DESC')->take(7)->get();
         }
         //dd($listProduct);exit;
         /*foreach ($listProduct as $listProductOfBrand) {
@@ -112,7 +135,15 @@ class HomeController extends Controller
         //var_dump($images); echo $images[array_rand($images,1)];
         //exit;
         //return view('home');
-        return view('index', compact('listProduct', 'listBrand', 'imagesProduct'));
+
+        /*foreach ($topSellProduct as $listP) {
+            foreach ($listP as $p) {
+                dd($p);
+            }
+        }*/
+        //dd($topNewProducts);
+        return view('index', compact('listProduct', 'listBrand', 'imagesProduct',
+                'topNewProducts', 'topSellProduct', 'topSaleProducts'));
     }
 
     /**

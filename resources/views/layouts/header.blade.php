@@ -119,7 +119,8 @@
                         <option>Từ 7 triệu đến 10 triệu</option>
                         <option>Trên 10 triệu</option>
                     </select>--}}
-                    <input type="text" name="q" value="{{\Request::get('q')}}" autofocus>
+                    <input type="text" name="q" value="{{\Request::get('q')}}"
+                           placeholder="Nhập tên sản phẩm hoặc mức giá bạn muốn tìm ..." autofocus>
                     <button type="submit"><i class="fa fa-search"></i></button>
                 </form>
             </div>

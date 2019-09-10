@@ -34,11 +34,16 @@
                 <div class="footer-menu">
                     <h2 class="footer-wid-title">Danh mục sảm phẩm</h2>
                     <ul>
-                        <li><a href="#">Điện thoại Samsung</a></li>
-                        <li><a href="#">Điện thoại iPhone</a></li>
-                        <li><a href="#">Điện thoại Vsmart</a></li>
-                        <li><a href="#">Điện thoại Xiaomi</a></li>
-                        <li><a href="#">Phụ kiện chính hãng</a></li>
+                        @foreach($listBrand as $brand)
+                            @if($brand->name != 'N/A')
+                                <li>
+                                    <a class="" href="{{route('list-product-of-brand', strtolower($brand->name))}}">
+                                        {{'Điện thoại '. $brand->name}}
+                                    </a>
+                                </li>
+                            @endif
+                        @endforeach
+                        <li><a class="" href="{{route('list-accessories')}}">Phụ kiện chính hãng</a></li>
                     </ul>
                 </div>
             </div>

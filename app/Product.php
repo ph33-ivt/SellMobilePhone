@@ -20,7 +20,8 @@ class Product extends Model
         'description',
         'warranty_period',
         'quantity',
-        'image'
+        'image',
+        'date_create',
     ];
 
     public function categories() {
