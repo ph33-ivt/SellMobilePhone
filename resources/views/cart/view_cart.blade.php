@@ -291,10 +291,9 @@
                                     <p>
 
                                     <label>
-                                            <input class="input-user" type="radio"
-                                                   name="payment-check" value="user_pay" checked>
+                                            <input id="user_pay" class="input-user" type="radio" name="payment-check" value="user_pay" checked>
                                             Nhận hóa đơn và thanh toán
-                                        </label>
+                                    </label>
                                     </p>
                                 </div>
                             @else
@@ -320,8 +319,7 @@
                                               placeholder="Email" readonly></p>
                                     <p>
                                         <label>
-                                            <input class="input-user" type="radio"
-                                                   name="payment-check" value="user_pay" checked>
+                                            <input id="user_pay" class="input-user" type="radio" name="payment-check" value="user_pay" checked>
                                             Nhận hóa đơn và thanh toán
                                         </label>
                                     </p>
@@ -364,8 +362,7 @@
 
                                     <p>
                                         <label>
-                                            <input class="input-receiver" type="radio"
-                                                   name="payment-check" value="receiver_pay">
+                                            <input id="receiver_pay" class="input-receiver" type="radio" name="payment-check" value="receiver_pay">
                                             Nhận hóa đơn và thanh toán
                                         </label>
                                     </p>
@@ -392,8 +389,7 @@
 
                                     <p>
                                         <label>
-                                            <input class="input-receiver" type="radio"
-                                                   name="payment-check" value="receiver_pay" disabled>
+                                            <input id="receiver_pay" class="input-receiver" type="radio" name="payment-check" value="receiver_pay" disabled>
                                             Nhận hóa đơn và thanh toán
                                         </label>
                                     </p>
@@ -612,4 +608,14 @@
             </div>
         </div>
     </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#receiver_pay').on('click', function () {
+                    $(this).val('receiver_pay');
+                });
+                $('#user_pay').on('click', function () {
+                    $(this).val('user_pay');
+                })
+            })
+        </script>
 @endsection
