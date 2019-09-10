@@ -24,18 +24,18 @@ class FeedbackRequest extends FormRequest
     public function rules()
     {
         return [
-            'email'=>'required|email',
-            'content'=> 'required|min:5',
+            'user_email'=>'required|email',
+            'message'=> 'required|min:5',
         ];
     }
 
     public function messages()
     {
         return [
-            'email.required'=>'Vui lòng nhập email để gửi tin nhắn.',
-            'email.email'=> 'Email bạn nhập chưa đúng định dạng.',
-            'content.required' => 'Bạn chưa nhập nội dung tin nhắn.',
-            'content.min' => 'Tin nhắn bạn quá ngắn.',
+            'user_email.required'=>'Vui lòng nhập email để gửi tin nhắn.',
+            'user_email.email'=> 'Email bạn nhập chưa đúng định dạng.',
+            'message.required' => 'Bạn chưa nhập nội dung tin nhắn.',
+            'message.min' => 'Tin nhắn bạn quá ngắn.',
         ];
     }
 }

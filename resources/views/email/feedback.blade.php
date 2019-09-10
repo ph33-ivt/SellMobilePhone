@@ -1,7 +1,7 @@
 <h3>Phản hồi của khác hàng:</h3>
 <p>
     Nội dung phản hồi: {{$content}}
-    <br>
+    <br><br><br>
     Được gửi từ email: {{$email}}
 </p>
 {{--<table>
