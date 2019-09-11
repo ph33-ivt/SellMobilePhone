@@ -55,13 +55,13 @@
                         <form method="post" action="{{route('feedback')}}">
                             @csrf
                             @if($errors->has('message'))
-                                <p style="color: red;">{{$errors->first('content')}}</p>
+                                <p style="color: red;">{{$errors->first('message')}}</p>
                             @endif
-                            <textarea rows="4" name="message" placeholder="Nội dung tin nhắn ..."></textarea>
+                            <textarea rows="4" name="message" value="{{old('message')}}" placeholder="Nội dung tin nhắn ..."></textarea>
                             @if($errors->has('user_email'))
                                 <p style="color: red;">{{$errors->first('user_email')}}</p>
                             @endif
-                            <input type="email" name="user_email" placeholder="Email của bạn?">
+                            <input type="email" name="user_email" value="{{old('user_email')}}" placeholder="Email của bạn?">
                             <button type="submit">Gửi phản hồi</button>
                         </form>
                     </div>

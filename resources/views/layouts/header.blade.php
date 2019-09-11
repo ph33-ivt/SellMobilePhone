@@ -90,8 +90,12 @@
             <div class="col-md-4">
                 <div class="header-right">
                     <ul class="list-unstyled list-inline">
+                        @if(Session::get('user') === null)
                         <li><a href="{{route('form-login')}}">Đăng Nhập <i class="fa fa-lock"></i></a></li>
                         <li><a href="{{route('form-register')}}">Đăng Ký <i class="fa fa-user"></i></a></li>
+                        @else
+                            <li><a href="{{route('order-history')}}">Lịch sử đặt hàng <i class="fa fa-list"></i></a></li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -195,6 +199,13 @@
         <span class="btnCloseMessage" onclick="this.parentElement.style.display='none';">&times;</span>
     </div>
 @endif
+@if($errors->has('message') || $errors->has('user_email'))
+    <script>
+        $(document).ready(function () {
+            $("html, body").animate({ scrollTop: $(document).height()-$(window).height()});
+        });
+    </script>
+@endif
 <style>
     .alert-info {position:fixed; right: 0; text-align: center; font-size: 30px; z-index: 999; display: none;}
     .alert-info strong{color: darkorange; margin-right: 20px;}
@@ -206,7 +217,7 @@
     <span class="btnCloseMessage" {{--onclick="this.parentElement.style.display='none';"--}}>&times;</span>
 </div>
 
-<{{--script>
+{{--<script>
     $(document).ready(function () {
         $('div.alert-info span').click(function (e) {
             e.preventDefault();
