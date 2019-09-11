@@ -46,192 +46,255 @@
             var url = "{{route('update-cart')}}";
 
             @if(Session::get('cart') != null)
-            @foreach($getCart as $product_id => $v)
+                @foreach($getCart as $product_id => $v)
+                    @foreach($listProduct as $product)
+                        @if($product_id == $product->id)
+                            $("#btn-minus-{{$product_id}}").click(function (e) {
+                                e.preventDefault();
 
-            $("#btn-minus-{{$product_id}}").click(function (e) {
-                e.preventDefault();
+                                if ($("#input-qty-{{$product_id}}").val() > 1) {
+                                    //alert('--');
+                                    //alert($("#input-qty-{{$product_id}}").val()-1);
 
-                if ($("#input-qty-{{$product_id}}").val() > 1) {
-                    //alert('--');
-                    //alert($("#input-qty-{{$product_id}}").val()-1);
+                                    var total = parseFloat($("span#cart-total").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    var discount = parseFloat($("span#cart-discount").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    /*var payment = parseFloat($("span#cart-payment").text().replace(/[.₫]/g,'').replace(',', '.'));
+                                    alert(payment);*/
 
-                    var total = parseFloat($("span#cart-total").text().replace(/[.₫]/g, '').replace(',', '.'));
-                    var discount = parseFloat($("span#cart-discount").text().replace(/[.₫]/g, '').replace(',', '.'));
-                    /*var payment = parseFloat($("span#cart-payment").text().replace(/[.₫]/g,'').replace(',', '.'));
-                    alert(payment);*/
+                                    var qty_old = $("#input-qty-{{$product_id}}").val();
+                                    var sub_discount_old = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
 
-                    var qty_old = $("#input-qty-{{$product_id}}").val();
-                    var sub_discount_old = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    total -= qty_old * "{{$v['item']->current_price}}";
+                                    discount -= sub_discount_old;
 
-                    total -= qty_old * "{{$v['item']->current_price}}";
-                    discount -= sub_discount_old;
+                                    $("#input-qty-{{$product_id}}").val($("#input-qty-{{$product_id}}").val() - 1);
 
-                    $("#input-qty-{{$product_id}}").val($("#input-qty-{{$product_id}}").val() - 1);
+                                    var qty = $("#input-qty-{{$product_id}}").val();
 
-                    var qty = $("#input-qty-{{$product_id}}").val();
+                                    total += qty * "{{$v['item']->current_price}}";
 
-                    total += qty * "{{$v['item']->current_price}}";
+                                    var cart_sub_discount = qty * ("{{$v['item']->current_price}}" * "{{$v['item']->discount_percent}}");
+                                    $(".cart-sub-discount-{{$product_id}}").html(
+                                        parseFloat(cart_sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    var sub_discount = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
 
-                    var cart_sub_discount = qty * ("{{$v['item']->current_price}}" * "{{$v['item']->discount_percent}}");
-                    $(".cart-sub-discount-{{$product_id}}").html(
-                        parseFloat(cart_sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    var sub_discount = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    discount += sub_discount;
 
-                    discount += sub_discount;
+                                    var cart_subtotal = qty * "{{$v['item']->current_price}}" - sub_discount;
+                                    $(".cart-subtotal-{{$product_id}}").html(
+                                        parseFloat(cart_subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    var subtotal = parseFloat($(".cart-subtotal-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
 
-                    var cart_subtotal = qty * "{{$v['item']->current_price}}" - sub_discount;
-                    $(".cart-subtotal-{{$product_id}}").html(
-                        parseFloat(cart_subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    var subtotal = parseFloat($(".cart-subtotal-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    $("span.discount-{{$product_id}}").html(
+                                        parseFloat(sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $("span.subtotal-{{$product_id}}").html(
+                                        parseFloat(subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $(".cart-total span").html(
+                                        parseFloat(total).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $(".cart-discount span").html(
+                                        parseFloat(discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $(".cart-payment span").html(
+                                        parseFloat(total - discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $(".cart-info-value a").html(
+                                        parseFloat(total - discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                } else {
+                                    //alert('Số lượng tối thiểu bằng 1');
+                                    $('.cart-notify').html(': Số lượng tối thiểu bằng 1').delay(2000).fadeOut('slow');
+                                    setTimeout(function () {
+                                        $('.cart-notify').html('').fadeIn();
+                                    }, 2500);
 
-                    $("span.discount-{{$product_id}}").html(
-                        parseFloat(sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $("span.subtotal-{{$product_id}}").html(
-                        parseFloat(subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $(".cart-total span").html(
-                        parseFloat(total).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $(".cart-discount span").html(
-                        parseFloat(discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $(".cart-payment span").html(
-                        parseFloat(total - discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $(".cart-info-value a").html(
-                        parseFloat(total - discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                } else {
-                    alert('Số lượng tối thiểu bằng 1');
-                }
-            });
-            {{-- edit quantity (end minus function)--}}
+                                    $('div.alert-info').css('display', 'block');
+                                    $('div.alert-info strong').html('Số lượng tối thiểu bằng 1');
+                                }
 
-            $("#btn-plus-{{$product_id}}").click(function (e) {
-                e.preventDefault();
-                //alert('++');
-                //alert(+$("#input-qty-{{$product_id}}").val()+1);
+                                $('div.alert-info span').click(function (e) {
+                                    e.preventDefault();
+                                    $('div.alert-info').fadeOut('slow');
+                                });
 
-                var currentQty = "{{$v['qty']}}";
-                var inputQty = $("#input-qty-{{$product_id}}").val();
+                                setTimeout(function () {
+                                    $('div.alert-info').fadeOut('slow');
+                                }, 1500);
+                            });
+                            {{-- edit quantity (end minus function)--}}
 
-                // if (currentQty > inputQty) {
-                //     alert(currentQty);
-                //     alert(++inputQty);
-                // } else {
-                //     alert('Mặt hàng này chỉ còn: ' + currentQty + ' cái.');
-                // }
+                            $("#btn-plus-{{$product_id}}").click(function (e) {
+                                e.preventDefault();
+                                //alert('++');
+                                //alert(+$("#input-qty-{{$product_id}}").val()+1);
 
-                var total = parseFloat($("span#cart-total").text().replace(/[.₫]/g, '').replace(',', '.'));
-                var discount = parseFloat($("span#cart-discount").text().replace(/[.₫]/g, '').replace(',', '.'));
-                /*var payment = parseFloat($("span#cart-payment").text().replace(/[.₫]/g,'').replace(',', '.'));
-                alert(payment);*/
+                                var currentQty = parseInt("{{$product->quantity}}");
+                                var inputQty = parseInt($("#input-qty-{{$product_id}}").val());
 
-                var qty_old = $("#input-qty-{{$product_id}}").val();
-                var sub_discount_old = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                if (currentQty > inputQty) {
+                                    var total = parseFloat($("span#cart-total").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    var discount = parseFloat($("span#cart-discount").text().replace(/[.₫]/g, '').replace(',', '.'));
 
-                total -= qty_old * "{{$v['item']->current_price}}";
-                discount -= sub_discount_old;
+                                    var qty_old = $("#input-qty-{{$product_id}}").val();
+                                    var sub_discount_old = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
 
-                $("#input-qty-{{$product_id}}").val(+$("#input-qty-{{$product_id}}").val() + 1);
+                                    total -= qty_old * "{{$v['item']->current_price}}";
+                                    discount -= sub_discount_old;
 
-                var qty = $("#input-qty-{{$product_id}}").val();
+                                    $("#input-qty-{{$product_id}}").val(+$("#input-qty-{{$product_id}}").val() + 1);
 
-                total += qty * "{{$v['item']->current_price}}";
+                                    var qty = $("#input-qty-{{$product_id}}").val();
 
-                var cart_sub_discount = qty * ("{{$v['item']->current_price * $v['item']->discount_percent}}");
-                $(".cart-sub-discount-{{$product_id}}").html(
-                    parseFloat(cart_sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                );
-                var sub_discount = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    total += qty * "{{$v['item']->current_price}}";
 
-                discount += sub_discount;
+                                    var cart_sub_discount = qty * ("{{$v['item']->current_price * $v['item']->discount_percent}}");
+                                    $(".cart-sub-discount-{{$product_id}}").html(
+                                        parseFloat(cart_sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    var sub_discount = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
 
-                var cart_subtotal = qty * "{{$v['item']->current_price}}" - sub_discount;
-                $(".cart-subtotal-{{$product_id}}").html(
-                    parseFloat(cart_subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                );
-                var subtotal = parseFloat($(".cart-subtotal-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    discount += sub_discount;
 
-                $("span.discount-{{$product_id}}").html(
-                    parseFloat(sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                );
-                $("span.subtotal-{{$product_id}}").html(
-                    parseFloat(subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                );
-                $(".cart-total span").html(
-                    parseFloat(total).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                );
-                $(".cart-discount span").html(
-                    parseFloat(discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                );
-                $(".cart-payment span").html(
-                    parseFloat(total - discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                );
-                $(".cart-info-value a").html(
-                    parseFloat(total - discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                );
-            });
-            {{-- edit quantity (end plus function)--}}
+                                    var cart_subtotal = qty * "{{$v['item']->current_price}}" - sub_discount;
+                                    $(".cart-subtotal-{{$product_id}}").html(
+                                        parseFloat(cart_subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    var subtotal = parseFloat($(".cart-subtotal-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
 
-            $("#input-qty-{{$product_id}}").change(function () {
-                if (Number.isInteger($(this).val()) || $(this).val() < 1) {
-                    $('.cart-notify').html(': Số lượng phải là số nguyên dương!').delay(2000).fadeOut('slow');
-                    setTimeout(function () {
-                        $('.cart-notify').html('').fadeIn();
-                    }, 2500);
-                } else {
-                    $('.cart-notify').html('');
+                                    $("span.discount-{{$product_id}}").html(
+                                        parseFloat(sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $("span.subtotal-{{$product_id}}").html(
+                                        parseFloat(subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $(".cart-total span").html(
+                                        parseFloat(total).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $(".cart-discount span").html(
+                                        parseFloat(discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $(".cart-payment span").html(
+                                        parseFloat(total - discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                    $(".cart-info-value a").html(
+                                        parseFloat(total - discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                    );
+                                } else {
+                                    //alert('Mặt hàng này chỉ còn: ' + currentQty + ' cái.');
+                                    $('.cart-notify').html(': Mặt hàng này chỉ còn: ' + currentQty + ' cái.').delay(2000).fadeOut('slow');
+                                    setTimeout(function () {
+                                        $('.cart-notify').html('').fadeIn();
+                                    }, 2500);
 
-                    var discount = parseFloat($("span#cart-discount").text().replace(/[.₫]/g, '').replace(',', '.'));
-                    var payment = parseFloat($("span#cart-payment").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    $('div.alert-info').css('display', 'block');
+                                    $('div.alert-info strong').html('Mặt hàng này chỉ còn: ' + currentQty + ' cái.');
+                                }
 
-                    var sub_discount_old = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
-                    var subtotal_old = parseFloat($(".cart-subtotal-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
-                    discount -= sub_discount_old;
-                    payment -= subtotal_old; //gia tien khi chua co san pham $product_id
+                                $('div.alert-info span').click(function (e) {
+                                    e.preventDefault();
+                                    $('div.alert-info').fadeOut('slow');
+                                });
 
-                    var qty = $("#input-qty-{{$product_id}}").val();
+                                setTimeout(function () {
+                                    $('div.alert-info').fadeOut('slow');
+                                }, 1500);
+                            });
+                            {{-- edit quantity (end plus function)--}}
 
-                    var cart_sub_discount = qty * ("{{$v['item']->current_price * $v['item']->discount_percent}}");
-                    $(".cart-sub-discount-{{$product_id}}").html(
-                        parseFloat(cart_sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    var sub_discount = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
-                    discount += sub_discount;
+                            $("#input-qty-{{$product_id}}").focusin(function () {
+                                $(this).data('val', $(this).val());
+                            });
+                            $("#input-qty-{{$product_id}}").change(function () {
+                                if (Number.isInteger($(this).val()) || $(this).val() < 1) {
+                                    $('.cart-notify').html(': Số lượng phải là số nguyên dương!').delay(2000).fadeOut('slow');
+                                    setTimeout(function () {
+                                        $('.cart-notify').html('').fadeIn();
+                                    }, 2500);
 
-                    var cart_subtotal_product = qty * "{{$v['item']->current_price}}" - sub_discount;
-                    $(".cart-subtotal-{{$product_id}}").html(
-                        parseFloat(cart_subtotal_product).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    var subtotal = parseFloat($(".cart-subtotal-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                    $('div.alert-info').css('display', 'block');
+                                    $('div.alert-info strong').html('Số lượng phải là số nguyên dương!');
+                                } else {
+                                    var currentQty = parseInt("{{$product->quantity}}");
+                                    var inputQty = parseInt($("#input-qty-{{$product_id}}").val());
 
-                    payment += subtotal;
+                                    if (currentQty >= inputQty) {
+                                        $('.cart-notify').html('');
 
-                    $("span.discount-{{$product_id}}").html(
-                        parseFloat(sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $("span.subtotal-{{$product_id}}").html(
-                        parseFloat(subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $(".cart-total span").html(
-                        parseFloat(payment + discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $(".cart-discount span").html(
-                        parseFloat(discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $(".cart-payment span").html(
-                        parseFloat(payment).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                    $(".cart-info-value a").html(
-                        parseFloat(payment).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
-                    );
-                }
-            });  {{-- edit quantity (end change input function)--}}
-            @endforeach
+                                        var discount = parseFloat($("span#cart-discount").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                        var payment = parseFloat($("span#cart-payment").text().replace(/[.₫]/g, '').replace(',', '.'));
+
+                                        var sub_discount_old = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                        var subtotal_old = parseFloat($(".cart-subtotal-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                        discount -= sub_discount_old;
+                                        payment -= subtotal_old; //gia tien khi chua co san pham $product_id
+
+                                        var qty = $("#input-qty-{{$product_id}}").val();
+
+                                        var cart_sub_discount = qty * ("{{$v['item']->current_price * $v['item']->discount_percent}}");
+                                        $(".cart-sub-discount-{{$product_id}}").html(
+                                            parseFloat(cart_sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                        );
+                                        var sub_discount = parseFloat($(".cart-sub-discount-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+                                        discount += sub_discount;
+
+                                        var cart_subtotal_product = qty * "{{$v['item']->current_price}}" - sub_discount;
+                                        $(".cart-subtotal-{{$product_id}}").html(
+                                            parseFloat(cart_subtotal_product).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                        );
+                                        var subtotal = parseFloat($(".cart-subtotal-{{$product_id}}").text().replace(/[.₫]/g, '').replace(',', '.'));
+
+                                        payment += subtotal;
+
+                                        $("span.discount-{{$product_id}}").html(
+                                            parseFloat(sub_discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                        );
+                                        $("span.subtotal-{{$product_id}}").html(
+                                            parseFloat(subtotal).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                        );
+                                        $(".cart-total span").html(
+                                            parseFloat(payment + discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                        );
+                                        $(".cart-discount span").html(
+                                            parseFloat(discount).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                        );
+                                        $(".cart-payment span").html(
+                                            parseFloat(payment).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                        );
+                                        $(".cart-info-value a").html(
+                                            parseFloat(payment).toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                        );
+                                    }else {
+                                        //alert('Mặt hàng này chỉ còn: ' + currentQty + ' cái.');
+                                        $('.cart-notify').html(': Mặt hàng này chỉ còn: ' + currentQty + ' cái.').delay(2000).fadeOut('slow');
+                                        setTimeout(function () {
+                                            $('.cart-notify').html('').fadeIn();
+                                        }, 2500);
+
+                                        $('div.alert-info').css('display', 'block');
+                                        $('div.alert-info strong').html('Mặt hàng này chỉ còn: ' + currentQty + ' cái.');
+
+                                        //alert($(this).data('val'));
+                                        $(this).val($(this).data('val'));
+                                    }
+
+                                    $('div.alert-info span').click(function (e) {
+                                        e.preventDefault();
+                                        $('div.alert-info').fadeOut('slow');
+                                    });
+
+                                    setTimeout(function () {
+                                        $('div.alert-info').fadeOut('slow');
+                                    }, 1500);
+                                }
+                            });
+                            {{-- edit quantity (end change input function)--}}
+                        @endif
+                    @endforeach
+                @endforeach
             @endif
         });
     </script> {{-- end script edit quantity--}}

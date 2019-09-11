@@ -207,7 +207,7 @@
     </script>
 @endif
 <style>
-    .alert-info {position:fixed; right: 0; text-align: center; font-size: 30px; z-index: 999; display: none;}
+    .alert-info {position:fixed; right: 0; text-align: center; font-size: 30px; z-index: 9999; display: none;}
     .alert-info strong{color: darkorange; margin-right: 20px;}
     .alert-info .btnCloseMessage {color: black; float: right;}
     .alert-info .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}

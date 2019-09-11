@@ -36,7 +36,7 @@ class CartController extends Controller
                 $discount += $v['qty'] * ($v['item']->current_price * $v['item']->discount_percent);
             }
 
-            return view('cart.view_cart', compact('listBrand', 'getCart', 'total', 'discount'));
+            return view('cart.view_cart', compact('listBrand','listProduct', 'getCart', 'total', 'discount'));
 
         } else {
             return view('cart.view_cart', compact('listBrand'));
