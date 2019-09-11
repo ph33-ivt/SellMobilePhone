@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Brand;
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class BrandController extends Controller
 {
@@ -23,20 +24,25 @@ class BrandController extends Controller
             }
         }
 
-        $images = [];
-        if ($dh = opendir($path)) {
-            while (($title = readdir($dh)) !== false) {
-                if (preg_match('/([a-zA-Z0-9\.\-\_\\s\(\)]+)\.([a-zA-Z0-9]+)$/', $title, $m)) {
-                    //var_dump($m); die;
-                    //echo $title . '<br />';
-                    $images[] = $path.$title;
+        if(!File::exists($path)) {
+            return redirect()->route('homepage')->with('success', 'Dữ liệu đang cập nhật, vui lòng truy cập lại sau!');
+        }
+        else {
+            $images = [];
+            if ($dh = opendir($path)) {
+                while (($title = readdir($dh)) !== false) {
+                    if (preg_match('/([a-zA-Z0-9\.\-\_\\s\(\)]+)\.([a-zA-Z0-9]+)$/', $title, $m)) {
+                        //var_dump($m); die;
+                        //echo $title . '<br />';
+                        $images[] = $path.$title;
+                    }
                 }
             }
+            return view('brand.product_list', compact('listBrand', 'listProduct', 'images'));
         }
         //dd($images);exit;
         //dd($listProduct);exit;
         //dd($brand_name);exit;
-        return view('brand.product_list', compact('listBrand', 'listProduct', 'images'));
     }
     /**
      * Display a listing of the resource.

@@ -44,6 +44,10 @@
         $("document").ready(function(){
             $(function() {
                 const url = window.location.href;
+
+                //js: url.split("/").pop();
+                //php: end(explode('/', url))
+
                 $('div.navbar-collapse ul li a').each(function() {
                     // checks if its the same on the address bar
                     if(url == (this.href)) {
@@ -57,6 +61,8 @@
                         //<div class="nav cart-info">
                     }
                 });
+
+
 
             });
 
@@ -84,8 +90,12 @@
             <div class="col-md-4">
                 <div class="header-right">
                     <ul class="list-unstyled list-inline">
+                        @if(Session::get('user') === null)
                         <li><a href="{{route('form-login')}}">Đăng Nhập <i class="fa fa-lock"></i></a></li>
                         <li><a href="{{route('form-register')}}">Đăng Ký <i class="fa fa-user"></i></a></li>
+                        @else
+                            <li><a href="{{route('order-history')}}">Lịch sử đặt hàng <i class="fa fa-list"></i></a></li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -149,13 +159,13 @@
                     @foreach($listBrand as $brand)
                         @if($brand->name != 'N/A')
                             <li>
-                                <a class="" href="{{route('list-product-of-brand', strtolower($brand->name))}}">
+                                <a class="phone-{{$brand->name}}" href="{{route('list-product-of-brand', strtolower($brand->name))}}">
                                     {{strtolower($brand->name)}}
                                 </a>
                             </li>
                         @endif
                     @endforeach
-                    <li><a class="" href="{{route('list-accessories')}}">Phụ Kiện</a></li>
+                    <li><a class="accessories" href="{{route('list-accessories')}}">Phụ Kiện</a></li>
                 </ul>
                 <div class="nav cart-info">
                     <div class="cart-info-count">
@@ -189,8 +199,15 @@
         <span class="btnCloseMessage" onclick="this.parentElement.style.display='none';">&times;</span>
     </div>
 @endif
+@if($errors->has('message') || $errors->has('user_email'))
+    <script>
+        $(document).ready(function () {
+            $("html, body").animate({ scrollTop: $(document).height()-$(window).height()});
+        });
+    </script>
+@endif
 <style>
-    .alert-info {position:fixed; right: 0; text-align: center; font-size: 30px; z-index: 999; display: none;}
+    .alert-info {position:fixed; right: 0; text-align: center; font-size: 30px; z-index: 9999; display: none;}
     .alert-info strong{color: darkorange; margin-right: 20px;}
     .alert-info .btnCloseMessage {color: black; float: right;}
     .alert-info .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}
@@ -200,7 +217,7 @@
     <span class="btnCloseMessage" {{--onclick="this.parentElement.style.display='none';"--}}>&times;</span>
 </div>
 
-<{{--script>
+{{--<script>
     $(document).ready(function () {
         $('div.alert-info span').click(function (e) {
             e.preventDefault();
