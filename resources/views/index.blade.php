@@ -5,11 +5,10 @@
 
     {{--<script src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
     <script src="{{asset('js/jquery-ui.min.js')}}"></script>--}}
-    {{--<script src="{{asset('js/onclick.js')}}"></script>--}}
+    {{--<script src="{{asset('js/add-to-cart.js')}}"></script>--}}
     <script>
         $(document).ready(function () {
-            @foreach($listProduct as $listProductOfBrand)
-            @foreach($listProductOfBrand as $product)
+            @foreach($listAllProduct as $product)
             $("button#btnAddToCart{{$product->id}}").click(function (e) {
                 e.preventDefault();
                 //alert('Its working!');
@@ -37,14 +36,19 @@
 
                         if (data.message == 'The product already exists!') {
                             //alert('Sản phẩm đã có trong giỏ hàng!');
-                            $('div.brand{{$product->brand_id}} span').html(' Sản phẩm đã có trong giỏ hàng!').delay(2000).fadeOut('slow');
+                            $('div.alert-info').css('display', 'block');
+                            $('div.alert-info strong').html('Đã có trong giỏ hàng!');
+
+                            $('div.brand{{$product->brand_id}} span').html(' Đã có trong giỏ hàng!').delay(2000).fadeOut('slow');
                             setTimeout(function () {
                                 $('div.brand{{$product->brand_id}} span').html('').fadeIn()
                             }, 2500);
                         } else {
                             //alert('Đã thêm vào giỏ hàng!');
                             //console.log(num, pay);
-                            console.log(data);
+                            //console.log(data);
+                            $('div.alert-info').css('display', 'block');
+                            $('div.alert-info strong').html('Đã thêm vào giỏ hàng!');
 
                             var num = data.num_price_product[0];
                             var pay = data.num_price_product[1];
@@ -58,13 +62,21 @@
                                 $('div.brand{{$product->brand_id}} span').html('').fadeIn()
                             }, 2500);
                         }
+
+                        $('div.alert-info span').click(function (e) {
+                            e.preventDefault();
+                            $('div.alert-info').fadeOut('slow');
+                        });
+
+                        setTimeout(function () {
+                            $('div.alert-info').fadeOut('slow');
+                        }, 1500);
                     },
                     error: function (error) {
                         console.log('Error:', data);
                     }
                 });
             });
-            @endforeach
             @endforeach
 
         });

@@ -3,7 +3,7 @@
 @section('content')
     <script>
         $(document).ready(function () {
-            @foreach($listProduct as $product)
+            @foreach($listAllProduct as $product)
             $("button#btnAddToCart{{$product->id}}").click(function (e) {
                 e.preventDefault();
                 //alert('Its working!');
@@ -29,11 +29,13 @@
                         //console.log(data.num_price_product[0]);
                         //console.log(data.num_price_product[1]);
                         if (data.message == 'The product already exists!') {
-                            alert('Sản phẩm đã có trong giỏ hàng!');
+                            //alert('Sản phẩm đã có trong giỏ hàng!');
+                            $('div.alert-info').css('display', 'block');
+                            $('div.alert-info strong').html('Đã có trong giỏ hàng!');
                         } else {
-                            alert('Đã thêm vào giỏ hàng!');
-                            //console.log(num, pay);
-                                {{--console.log(data);--}}
+                            //alert('Đã thêm vào giỏ hàng!');
+                            $('div.alert-info').css('display', 'block');
+                            $('div.alert-info strong').html('Đã thêm vào giỏ hàng!');
 
                             var num = data.num_price_product[0];
                             var pay = data.num_price_product[1];
@@ -43,6 +45,15 @@
                                 pay.toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
                             );
                         }
+
+                        $('div.alert-info span').click(function (e) {
+                            e.preventDefault();
+                            $('div.alert-info').fadeOut('slow');
+                        });
+
+                        setTimeout(function () {
+                            $('div.alert-info').fadeOut('slow');
+                        }, 1500);
                     },
                     error: function (error) {
                         console.log('Error:', data);

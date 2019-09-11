@@ -6,3 +6,4 @@ $(document).ready(function () {
         console.log(product_id);
     });*/
 });
+

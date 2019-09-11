@@ -29,6 +29,7 @@ class HomeController extends Controller
     {
         /*$listBrandId = Brand::pluck('id');*/
         $listBrand = Brand::orderBy('id')->get();
+        $listAllProduct = Product::all();
 
         $topNewProducts = Product::orderBy('date_create', 'DESC')->take(3)->get();
         /*dd($topNewProducts->first());
@@ -65,7 +66,7 @@ class HomeController extends Controller
         $decode = json_decode($json);
         var_dump($decode);exit;*/
 
-       // $listProduct = array();
+        // $listProduct = array();
 
         foreach ($listBrand as $brand) {
             /*$listProduct[] = $brand->name;*/
@@ -74,7 +75,8 @@ class HomeController extends Controller
                 ['quantity', '>', 0],
             ])->orderBy('current_price', 'DESC')->take(7)->get();
         }
-        //dd($listProduct);exit;
+
+        //dd($listAllProduct);exit;
         /*foreach ($listProduct as $listProductOfBrand) {
             foreach ($listProductOfBrand as $product) {
                 var_dump($product->name);
@@ -143,7 +145,7 @@ class HomeController extends Controller
         }*/
         //dd($topNewProducts);
         return view('index', compact('listProduct', 'listBrand', 'imagesProduct',
-                'topNewProducts', 'topSellProduct', 'topSaleProducts'));
+            'listAllProduct', 'topNewProducts', 'topSellProduct', 'topSaleProducts'));
     }
 
     /**

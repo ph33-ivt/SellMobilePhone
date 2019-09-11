@@ -49,6 +49,7 @@ class ProductController extends Controller
     {
         //dd($id);
         $listBrand = Brand::orderBy('id')->get();
+        $listAllProduct = Product::all();
         $prd = Product::find($id);
 
         $listProduct = Product::where([
@@ -57,7 +58,7 @@ class ProductController extends Controller
         ])->orderBy('current_price')->take(7)->get();
         //dd($product->description);
 
-        return view('product.product_detail', compact('listBrand', 'prd', 'listProduct'));
+        return view('product.product_detail', compact('listBrand', 'listAllProduct', 'prd', 'listProduct'));
     }
 
     /**

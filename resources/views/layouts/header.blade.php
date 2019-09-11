@@ -189,3 +189,25 @@
         <span class="btnCloseMessage" onclick="this.parentElement.style.display='none';">&times;</span>
     </div>
 @endif
+<style>
+    .alert-info {position:fixed; right: 0; text-align: center; font-size: 30px; z-index: 999; display: none;}
+    .alert-info strong{color: darkorange; margin-right: 20px;}
+    .alert-info .btnCloseMessage {color: black; float: right;}
+    .alert-info .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}
+</style>
+<div class="alert alert-info" >
+    <strong></strong>
+    <span class="btnCloseMessage" {{--onclick="this.parentElement.style.display='none';"--}}>&times;</span>
+</div>
+
+<{{--script>
+    $(document).ready(function () {
+        $('div.alert-info span').click(function (e) {
+            e.preventDefault();
+            $('div.alert-info').fadeOut('slow');
+        });
+        setTimeout(function () {
+            $('div.alert-info').fadeOut('slow');
+        }, 1500);
+    });
+</script>--}}
