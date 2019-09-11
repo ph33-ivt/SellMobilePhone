@@ -44,6 +44,10 @@
         $("document").ready(function(){
             $(function() {
                 const url = window.location.href;
+
+                //js: url.split("/").pop();
+                //php: end(explode('/', url))
+
                 $('div.navbar-collapse ul li a').each(function() {
                     // checks if its the same on the address bar
                     if(url == (this.href)) {
@@ -57,6 +61,8 @@
                         //<div class="nav cart-info">
                     }
                 });
+
+
 
             });
 
@@ -149,13 +155,13 @@
                     @foreach($listBrand as $brand)
                         @if($brand->name != 'N/A')
                             <li>
-                                <a class="" href="{{route('list-product-of-brand', strtolower($brand->name))}}">
+                                <a class="phone-{{$brand->name}}" href="{{route('list-product-of-brand', strtolower($brand->name))}}">
                                     {{strtolower($brand->name)}}
                                 </a>
                             </li>
                         @endif
                     @endforeach
-                    <li><a class="" href="{{route('list-accessories')}}">Phụ Kiện</a></li>
+                    <li><a class="accessories" href="{{route('list-accessories')}}">Phụ Kiện</a></li>
                 </ul>
                 <div class="nav cart-info">
                     <div class="cart-info-count">

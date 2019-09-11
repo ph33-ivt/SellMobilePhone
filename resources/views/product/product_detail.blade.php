@@ -2,6 +2,30 @@
 
 @section('content')
     <script>
+        $("document").ready(function(){
+            const url = window.location.href;
+
+            @foreach($listAllProduct as $product)
+            if("{{$product->id }}" == url.split("/").pop()) {
+                if("{{$product->category_id}}" == 1) {
+                    @foreach($listBrand as $brand)
+                        @if($product->brand_id == $brand->id)
+                            $('div.navbar-collapse ul li a.phone-{{$brand->name}}').closest("li").addClass("active");
+                            //alert("{{$brand->name}}");
+                        @endif
+                    @endforeach
+                }else {
+                    $('div.navbar-collapse ul li a.accessories').closest("li").addClass("active");
+                }
+            }
+            //js: url.split("/").pop();
+            //php: end(explode('/', url))
+            @endforeach
+
+        });
+    </script>
+
+    <script>
         $(document).ready(function () {
             @foreach($listAllProduct as $product)
             $("button#btnAddToCart{{$product->id}}").click(function (e) {
@@ -68,10 +92,10 @@
     <div class="single-product-area">
         <div class="zigzag-bottom"></div>
         <div class="container">
-            <div class="product-breadcroumb">
+            {{--<div class="product-breadcroumb">
                 <a href="">Home</a>
                 <a href="">Category Name</a>
-            </div>
+            </div>--}}
 
             <div class="row">
                 <div class="col-md-4">
