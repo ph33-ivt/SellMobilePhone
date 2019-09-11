@@ -24,49 +24,20 @@ class CartController extends Controller
     public function index()
     {
         $listBrand = Brand::orderBy('id')->get();
+        $listProduct = Product::all();
 
         if (Session::get('cart') !== null) {
-            $c = Session::get('cart')->items;
-            //$listProduct = array();
-            //$qty = array();
-
-            $prd_and_qty = array();
-            foreach ($c as $product_id => $v) {
-                //$qty[$product_id] = $v['qty'];
-                //$listProduct[$product_id] = $v['item'];
-                $prd_and_qty[$product_id]['sp'] = $v['item'];
-                $prd_and_qty[$product_id]['sl'] = $v['qty'];
-            }
+            $getCart = Session::get('cart')->items;
 
             $total = 0;
             $discount = 0;
-//            $payment = 0;
-            foreach ($prd_and_qty as $product_id => $v) {
-                //var_dump($k);
-//                var_dump($v['sl']);
-//                var_dump($v['sp']['current_price']);
-
-                $total += $v['sl'] * $v['sp']['current_price'];
-                $discount += $v['sl'] * ($v['sp']['current_price'] * $v['sp']['discount_percent']);
-                //var_dump($total);
-                //var_dump($discount);
-                //exit;
-                /*foreach ($v as $kk=>$vv) {
-                    var_dump($vv['name']);
-                }*/
+            foreach ($getCart as $product_id => $v) {
+                $total += $v['qty'] * $v['item']->current_price;
+                $discount += $v['qty'] * ($v['item']->current_price * $v['item']->discount_percent);
             }
-//            $payment = $total - $discount;
-//            echo($total)."<br>";
-//            echo($discount)."<br>";
-//            dd($payment)."<br>";
-//            exit;
 
-//            foreach ($listProduct as $product) {
-//                dd($product->name);
-//            }
-//            exit;
-            return view('cart.view_cart', compact('listBrand', 'prd_and_qty', 'total', 'discount'));
-            //return view('cart.view_cart', compact('listBrand', 'listProduct'));
+            return view('cart.view_cart', compact('listBrand', 'getCart', 'total', 'discount'));
+
         } else {
             return view('cart.view_cart', compact('listBrand'));
         }
@@ -280,7 +251,7 @@ class CartController extends Controller
                 if ($info['payment-check'] == 'user_pay') {
                     //echo 'Đặt hàng cho người khác và thanh toán';
                     $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['address']);
-                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->orderBy('id', 'desc')->first();
 
                     foreach ($cart->items as $product_id => $value) {
                         $amount = $value['qty'] * $value['item']->current_price;
@@ -295,7 +266,7 @@ class CartController extends Controller
                 if ($info['payment-check'] == 'receiver_pay') {
                     //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
                     $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['receiver-address']);
-                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->orderBy('id', 'desc')->first();
 
                     foreach ($cart->items as $product_id => $value) {
                         $amount = $value['qty'] * $value['item']->current_price;
@@ -314,7 +285,7 @@ class CartController extends Controller
             if (sizeof($info) == 5) {
                 //echo 'Đặt hàng, nhận hàng và thanh toán';
                 $this->createOrders($insertedUserID['id'], $sessionUser['user_phone'], $sessionUser['user_address'], $sessionUser['user_address']);
-                $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+                $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->orderBy('id', 'desc')->first();
 
                 foreach ($cart->items as $product_id => $value) {
                     $amount = $value['qty'] * $value['item']->current_price;
@@ -333,7 +304,7 @@ class CartController extends Controller
                 if ($info['payment-check'] == 'user_pay') {
                     //echo 'Đặt hàng cho người khác và thanh toán';
                     $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $sessionUser['user_address']);
-                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->orderBy('id', 'desc')->first();
 
                     foreach ($cart->items as $product_id => $value) {
                         $amount = $value['qty'] * $value['item']->current_price;
@@ -348,7 +319,7 @@ class CartController extends Controller
                 if ($info['payment-check'] == 'receiver_pay') {
                     //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
                     $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['receiver-address']);
-                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
+                    $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->orderBy('id', 'desc')->first();
 
                     foreach ($cart->items as $product_id => $value) {
                         $amount = $value['qty'] * $value['item']->current_price;
