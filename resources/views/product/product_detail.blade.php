@@ -3,7 +3,7 @@
 @section('content')
     <script>
         $(document).ready(function () {
-            @foreach($listProduct as $product)
+            @foreach($listAllProduct as $product)
             $("button#btnAddToCart{{$product->id}}").click(function (e) {
                 e.preventDefault();
                 //alert('Its working!');
@@ -29,11 +29,13 @@
                         //console.log(data.num_price_product[0]);
                         //console.log(data.num_price_product[1]);
                         if (data.message == 'The product already exists!') {
-                            alert('Sản phẩm đã có trong giỏ hàng!');
+                            //alert('Sản phẩm đã có trong giỏ hàng!');
+                            $('div.alert-info').css('display', 'block');
+                            $('div.alert-info strong').html('Đã có trong giỏ hàng!');
                         } else {
-                            alert('Đã thêm vào giỏ hàng!');
-                            //console.log(num, pay);
-                                {{--console.log(data);--}}
+                            //alert('Đã thêm vào giỏ hàng!');
+                            $('div.alert-info').css('display', 'block');
+                            $('div.alert-info strong').html('Đã thêm vào giỏ hàng!');
 
                             var num = data.num_price_product[0];
                             var pay = data.num_price_product[1];
@@ -43,6 +45,15 @@
                                 pay.toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
                             );
                         }
+
+                        $('div.alert-info span').click(function (e) {
+                            e.preventDefault();
+                            $('div.alert-info').fadeOut('slow');
+                        });
+
+                        setTimeout(function () {
+                            $('div.alert-info').fadeOut('slow');
+                        }, 1500);
                     },
                     error: function (error) {
                         console.log('Error:', data);
@@ -60,7 +71,6 @@
             <div class="product-breadcroumb">
                 <a href="">Home</a>
                 <a href="">Category Name</a>
-                <a href="">Sony Smart TV - 2015</a>
             </div>
 
             <div class="row">
@@ -88,17 +98,17 @@
                         <i class="fa fa-star"></i>
                     </div>
                     <div class="product-inner-price" style="margin-top: 10px;">
-                        <span style="color: red;">{{'(-'. ($product->discount_percent * 100) . '%)'}}</span>
-                        <ins>{{number_format((float)($product->current_price - ($product->current_price * $product->discount_percent)),2,",", ".") .' VNĐ'}}</ins>
-                        <del>{{number_format((float)$product->current_price,2,",", ".") . ' VNĐ'}}</del>
+                        <span style="color: red;">{{'(-'. ($prd->discount_percent * 100) . '%)'}}</span>
+                        <ins>{{number_format((float)($prd->current_price - ($prd->current_price * $prd->discount_percent)),2,",", ".") .' VNĐ'}}</ins>
+                        <del>{{number_format((float)$prd->current_price,2,",", ".") . ' VNĐ'}}</del>
                     </div>
-                    <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$product->id}}"
+                    <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$prd->id}}"
                             style="margin-bottom: 25px;">
                         <i class="fa fa-shopping-cart"> Thêm vào giỏ hàng</i>
                     </button>
                     <div class="product-inner">
                         <h3>Thông số kỹ thuật</h3>
-                        <p>{{$product->description}}</p>
+                        <p>{{$prd->description}}</p>
                     </div>
                 </div>
 
@@ -165,7 +175,7 @@
             <div role="tabpanel">
                 <ul class="product-tab" role="tablist">
                     <li role="presentation" class="active">
-                        <a href="#same-brand" aria-controls="same-brand" role="tab" data-toggle="tab">Cùng hãng</a>
+                        <a href="#same-brand" aria-controls="same-brand" role="tab" data-toggle="tab">Cùng loại</a>
                     </li>
                     <li role="presentation">
                         <a href="#same-price" aria-controls="same-price" role="tab" data-toggle="tab">Mức giá tương

@@ -24,6 +24,7 @@ $factory->define(User::class, function (Faker $faker) {
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
         'phone' => $faker->unique()->phoneNumber,
+        //'phone' => $faker->unique()->regexify('(0)(\d{3})( )(\d{3})( )(\d{3})'),
         'address' => $faker->address,
         'email_verified_at' => now(),
         'remember_token' => Str::random(10),

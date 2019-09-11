@@ -24,6 +24,7 @@ class CreateProductsTable extends Migration
             $table->tinyInteger('warranty_period');
             $table->smallInteger('quantity');
             $table->string('image');
+            $table->dateTime('date_create');
             $table->foreign('category_id')->references('id')->on('categories');
             $table->foreign('brand_id')->references('id')->on('brands');
             //$table->softDeletes();

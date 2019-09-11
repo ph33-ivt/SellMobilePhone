@@ -22,7 +22,7 @@ Route::get('/accessories', 'CategoryController@listAccessories')->name('list-acc
 
 Route::get('/product/{id}', 'ProductController@show')->name('product-detail'); // xem thong tin cua 1 san pham
 
-Route::get('/search', 'SearchController@searchByProductName')->name('search'); // tim kiem san pham
+Route::get('/search', 'SearchController@searchProduct')->name('search'); // tim kiem san pham
 
 Route::get('/cart', 'CartController@index')->name('view-cart'); // xem gio hang
 Route::get('/add-to-cart/{product_id}', 'CartController@addProductToCart')->name('add-product-to-cart'); // them san pham vao gio hang

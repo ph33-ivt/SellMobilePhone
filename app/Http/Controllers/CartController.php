@@ -26,11 +26,12 @@ class CartController extends Controller
         $listBrand = Brand::orderBy('id')->get();
 
         if (Session::get('cart') !== null) {
-            $a = Session::get('cart')->items;
+            $c = Session::get('cart')->items;
             //$listProduct = array();
             //$qty = array();
+
             $prd_and_qty = array();
-            foreach ($a as $product_id => $v) {
+            foreach ($c as $product_id => $v) {
                 //$qty[$product_id] = $v['qty'];
                 //$listProduct[$product_id] = $v['item'];
                 $prd_and_qty[$product_id]['sp'] = $v['item'];
@@ -240,9 +241,9 @@ class CartController extends Controller
 
         //dd(sizeof($info));
 
-//        dd($request->all());
         if ($user === null) {
-            if (sizeof($info) == 6) {
+            if (sizeof($info) == 5) {
+                //echo 'Đặt hàng, nhận hàng và thanh toán';
                 if ($validator_user->fails()) {
                     return redirect()->back()->withErrors($validator_user->errors())->withInput();
                 }
@@ -260,9 +261,10 @@ class CartController extends Controller
                     $amount = $value['qty'] * $value['item']->current_price;
                     $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
                     $this->createOrderDetails($insertedOrderId, $product_id, $amount, $discount_amount, $value['qty']);
-                }
 
-                //echo 'Đặt hàng, nhận hàng và thanh toán';
+                    $oldQty = Product::find($product_id)->quantity;
+                    $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
+                }
 
             } else {
 
@@ -276,6 +278,7 @@ class CartController extends Controller
                 $insertedUserID = User::where('phone', $info['phone'])->first();
 
                 if ($info['payment-check'] == 'user_pay') {
+                    //echo 'Đặt hàng cho người khác và thanh toán';
                     $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['address']);
                     $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
 
@@ -283,11 +286,14 @@ class CartController extends Controller
                         $amount = $value['qty'] * $value['item']->current_price;
                         $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
                         $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+
+                        $oldQty = Product::find($product_id)->quantity;
+                        $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
                     }
-                    //echo 'Đặt hàng cho người khác và thanh toán';
                 }
 
                 if ($info['payment-check'] == 'receiver_pay') {
+                    //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
                     $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['receiver-address']);
                     $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
 
@@ -295,15 +301,18 @@ class CartController extends Controller
                         $amount = $value['qty'] * $value['item']->current_price;
                         $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
                         $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+
+                        $oldQty = Product::find($product_id)->quantity;
+                        $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
                     }
-                    //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
                 }
             }
         } else {
             $sessionUser = $request->session()->get('user');
             $insertedUserID = User::where('phone', $sessionUser['user_phone'])->first();
 
-            if (sizeof($info) == 6) {
+            if (sizeof($info) == 5) {
+                //echo 'Đặt hàng, nhận hàng và thanh toán';
                 $this->createOrders($insertedUserID['id'], $sessionUser['user_phone'], $sessionUser['user_address'], $sessionUser['user_address']);
                 $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
 
@@ -311,18 +320,18 @@ class CartController extends Controller
                     $amount = $value['qty'] * $value['item']->current_price;
                     $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
                     $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+
+                    $oldQty = Product::find($product_id)->quantity;
+                    $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
                 }
-                //echo 'Đặt hàng, nhận hàng và thanh toán';
             } else {
 
                 if ($validator_receiver->fails()) {
                     //dd($validator->errors());
                     return redirect()->back()->withErrors($validator_receiver->errors())->withInput();
                 }
-
-                //dd($info['payment-check']);
-
                 if ($info['payment-check'] == 'user_pay') {
+                    //echo 'Đặt hàng cho người khác và thanh toán';
                     $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $sessionUser['user_address']);
                     $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
 
@@ -330,11 +339,14 @@ class CartController extends Controller
                         $amount = $value['qty'] * $value['item']->current_price;
                         $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
                         $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+
+                        $oldQty = Product::find($product_id)->quantity;
+                        $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
                     }
-                    //echo 'Đặt hàng cho người khác và thanh toán';
                 }
 
                 if ($info['payment-check'] == 'receiver_pay') {
+                    //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
                     $this->createOrders($insertedUserID['id'], $info['receiver-phone'], $info['receiver-address'], $info['receiver-address']);
                     $insertedOrderID = Order::where('user_id', $insertedUserID['id'])->first();
 
@@ -342,8 +354,10 @@ class CartController extends Controller
                         $amount = $value['qty'] * $value['item']->current_price;
                         $discount_amount = $value['qty'] * $value['item']->current_price * $value['item']->discount_percent;
                         $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
+
+                        $oldQty = Product::find($product_id)->quantity;
+                        $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
                     }
-                    //echo 'Chỉ đặt hàng, người nhận hàng thanh toán';
                 }
             }
         }
@@ -353,10 +367,10 @@ class CartController extends Controller
         dd($c);*/
 
         return redirect()->route('homepage')->with('success', 'Đặt hàng thành công!');
-        //return response()->json(['message' => 'Đặt hàng thành công!',], 200);
     }
 
-    public function createSessionUser($request, $name, $address, $phone, $email) {
+    public function createSessionUser($request, $name, $address, $phone, $email)
+    {
         $u = array();
         $u['user_name'] = $name;
         $u['user_address'] = $address;
@@ -403,13 +417,16 @@ class CartController extends Controller
         OrderDetail::insert($dataOrderDetail);
     }
 
+    public function updateQuantityProduct($productID, $qty) {
+        Product::where('id', $productID)->update(['quantity' => $qty]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public
-    function create()
+    public function create()
     {
         //
     }
@@ -420,8 +437,7 @@ class CartController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public
-    function store(Request $request)
+    public function store(Request $request)
     {
         //
     }
@@ -432,8 +448,7 @@ class CartController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function show($id)
+    public function show($id)
     {
         //
     }
@@ -444,8 +459,7 @@ class CartController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function edit($id)
+    public function edit($id)
     {
         //
     }
@@ -457,8 +471,7 @@ class CartController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -469,8 +482,7 @@ class CartController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function destroy($id)
+    public function destroy($id)
     {
         //
     }

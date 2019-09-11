@@ -5,11 +5,10 @@
 
     {{--<script src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
     <script src="{{asset('js/jquery-ui.min.js')}}"></script>--}}
-    {{--<script src="{{asset('js/onclick.js')}}"></script>--}}
+    {{--<script src="{{asset('js/add-to-cart.js')}}"></script>--}}
     <script>
         $(document).ready(function () {
-            @foreach($listProduct as $listProductOfBrand)
-            @foreach($listProductOfBrand as $product)
+            @foreach($listAllProduct as $product)
             $("button#btnAddToCart{{$product->id}}").click(function (e) {
                 e.preventDefault();
                 //alert('Its working!');
@@ -37,34 +36,47 @@
 
                         if (data.message == 'The product already exists!') {
                             //alert('Sản phẩm đã có trong giỏ hàng!');
-                            $('div.brand{{$product->brand_id}} span').html(' Sản phẩm đã có trong giỏ hàng!').delay(2000).fadeOut('slow');
-                            setTimeout(function() {
+                            $('div.alert-info').css('display', 'block');
+                            $('div.alert-info strong').html('Đã có trong giỏ hàng!');
+
+                            $('div.brand{{$product->brand_id}} span').html(' Đã có trong giỏ hàng!').delay(2000).fadeOut('slow');
+                            setTimeout(function () {
                                 $('div.brand{{$product->brand_id}} span').html('').fadeIn()
                             }, 2500);
                         } else {
                             //alert('Đã thêm vào giỏ hàng!');
                             //console.log(num, pay);
-                            console.log(data);
+                            //console.log(data);
+                            $('div.alert-info').css('display', 'block');
+                            $('div.alert-info strong').html('Đã thêm vào giỏ hàng!');
 
                             var num = data.num_price_product[0];
                             var pay = data.num_price_product[1];
 
                             $('div.cart-info-count a').html(num + ' sản phẩm');
                             $('div.cart-info-value a').html(
-                            pay.toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
+                                pay.toFixed(2).replace('.', ',').replace(/\d(?=(\d{3})+,)/g, '$&.') + '<sup>₫</sup>'
                             );
                             $('div.brand{{$product->brand_id}} span').html(' Đã thêm vào giỏ hàng!').delay(2000).fadeOut('slow');
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 $('div.brand{{$product->brand_id}} span').html('').fadeIn()
                             }, 2500);
                         }
+
+                        $('div.alert-info span').click(function (e) {
+                            e.preventDefault();
+                            $('div.alert-info').fadeOut('slow');
+                        });
+
+                        setTimeout(function () {
+                            $('div.alert-info').fadeOut('slow');
+                        }, 1500);
                     },
                     error: function (error) {
                         console.log('Error:', data);
                     }
                 });
             });
-            @endforeach
             @endforeach
 
         });
@@ -137,7 +149,9 @@
                                         <div class="product-f-image">
                                             <div>
                                                 {{--<img src="{{asset($images[array_rand($images,1)])}}" alt="{{$product->name}}">--}}
-                                                <img src="{{$imagesProduct[($product->brand_id)][array_rand($imagesProduct[($product->brand_id)], 1)]}}" alt="{{$product->name}}">
+                                                <img
+                                                    src="{{$imagesProduct[($product->brand_id)][array_rand($imagesProduct[($product->brand_id)], 1)]}}"
+                                                    alt="{{$product->name}}">
                                             </div>
                                             <div class="product-hover">
                                                 <button class="btn-add-to-cart" id="btnAddToCart{{$product->id}}">
@@ -146,17 +160,21 @@
                                                 {{--<a href="{{route('add-product-to-cart', $product->id)}}" class="add-to-cart-link">
                                                     <i class="fa fa-shopping-cart"> Add to cart</i>
                                                 </a>--}}
-                                                <a href="{{route('product-detail', $product->id)}}" class="view-details-link">
+                                                <a href="{{route('product-detail', $product->id)}}"
+                                                   class="view-details-link">
                                                     <i class="fa fa-link"> Xem chi tiết</i>
                                                 </a>
                                             </div>
                                         </div>
                                         <div class="product-name">
-                                            <h2><a href="{{route('product-detail', $product->id)}}">{{$product->name}}</a></h2>
+                                            <h2>
+                                                <a href="{{route('product-detail', $product->id)}}">{{$product->name}}</a>
+                                            </h2>
                                         </div>
 
                                         <div class="product-carousel-price">
-                                            <span style="color: red;">{{'(-'. ($product->discount_percent * 100) . '%)'}}</span>
+                                            <span
+                                                style="color: red;">{{'(-'. ($product->discount_percent * 100) . '%)'}}</span>
                                             <ins>{{number_format((float)$product->current_price - ($product->current_price * $product->discount_percent), 2,",", ".") . ' VNĐ'}}</ins>
                                             <br>
                                             <del>{{number_format((float)$product->current_price,2,",", ".") . ' VNĐ'}}</del>
@@ -194,164 +212,114 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="single-product-widget">
-                        <h2 class="product-wid-title">Top Sellers</h2>
-                        <a href="" class="wid-view-more">View All</a>
-                        <div class="single-wid-product">
-                            <a href="#product/id"><img src="img/product-thumb-1.jpg" alt=""
-                                                               class="product-thumb"></a>
-                            <h2><a href="#product/id">Sony Smart TV - 2015</a></h2>
-                            <div class="product-wid-rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
+                        <div style="text-align: center"><h2 class="product-wid-title">Sản phẩm mới</h2></div>
+                        @if($topNewProducts->isEmpty())
+                            <div style="text-align: center">
+                                <p style="color: green; font-size: 30px;">Đang cập nhật dữ liệu</p>
                             </div>
-                            <div class="product-wid-price">
-                                <ins>$400.00</ins>
-                                <del>$425.00</del>
-                            </div>
-                        </div>
-                        <div class="single-wid-product">
-                            <a href="#product/id"><img src="img/product-thumb-2.jpg" alt=""
-                                                               class="product-thumb"></a>
-                            <h2><a href="#product/id">Apple new mac book 2015</a></h2>
-                            <div class="product-wid-rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
-                            <div class="product-wid-price">
-                                <ins>$400.00</ins>
-                                <del>$425.00</del>
-                            </div>
-                        </div>
-                        <div class="single-wid-product">
-                            <a href="#product/id"><img src="img/product-thumb-3.jpg" alt=""
-                                                               class="product-thumb"></a>
-                            <h2><a href="#product/id">Apple new i phone 6</a></h2>
-                            <div class="product-wid-rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
-                            <div class="product-wid-price">
-                                <ins>$400.00</ins>
-                                <del>$425.00</del>
-                            </div>
-                        </div>
+                        @else
+                            @foreach($topNewProducts as $newP)
+                                <div class="single-wid-product">
+                                    <div style="position: relative">
+                                        <a href="#product/id"><img src="img/product-thumb-2.jpg" alt="{{$newP->name}}"
+                                                                   class="product-thumb"></a>
+                                        <h2><a href="#product/id">{{$newP->name}}</a></h2>
+                                        <div class="product-wid-rating">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                        <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$newP->id}}"
+                                                style="position: absolute; top: 0; right: 0;">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </button>
+                                    </div>
+                                    <div class="product-wid-price">
+                                        <span style="color: red;">{{'(-'. ($newP->discount_percent * 100) . '%)'}}</span>
+                                        <ins>{{number_format((float)$newP->current_price - ($newP->current_price * $newP->discount_percent), 2,",", ".") . ' VNĐ'}}</ins>
+                                        <del>{{number_format((float)$newP->current_price,2,",", ".") . ' VNĐ'}}</del>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 </div>
+
                 <div class="col-md-4">
                     <div class="single-product-widget">
-                        <h2 class="product-wid-title">Recently Viewed</h2>
-                        <a href="#" class="wid-view-more">View All</a>
-                        <div class="single-wid-product">
-                            <a href="#product/id"><img src="img/product-thumb-4.jpg" alt=""
-                                                               class="product-thumb"></a>
-                            <h2><a href="#product/id">Sony playstation microsoft</a></h2>
-                            <div class="product-wid-rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
+                        <div style="text-align: center"><h2 class="product-wid-title">Bán chạy nhất</h2></div>
+                        @if($topSellProduct==[])
+                            <div style="text-align: center">
+                                <p style="color: green; font-size: 30px;">Đang cập nhật dữ liệu</p>
                             </div>
-                            <div class="product-wid-price">
-                                <ins>$400.00</ins>
-                                <del>$425.00</del>
-                            </div>
-                        </div>
-                        <div class="single-wid-product">
-                            <a href="#product/id"><img src="img/product-thumb-1.jpg" alt=""
-                                                               class="product-thumb"></a>
-                            <h2><a href="#product/id">Sony Smart Air Condtion</a></h2>
-                            <div class="product-wid-rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
-                            <div class="product-wid-price">
-                                <ins>$400.00</ins>
-                                <del>$425.00</del>
-                            </div>
-                        </div>
-                        <div class="single-wid-product">
-                            <a href="#product/id"><img src="img/product-thumb-2.jpg" alt=""
-                                                               class="product-thumb"></a>
-                            <h2><a href="#product/id">Samsung gallaxy note 4</a></h2>
-                            <div class="product-wid-rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
-                            <div class="product-wid-price">
-                                <ins>$400.00</ins>
-                                <del>$425.00</del>
-                            </div>
-                        </div>
+                        @else
+                            @foreach ($topSellProduct as $listP)
+                                @foreach ($listP as $sellP)
+                                <div class="single-wid-product">
+                                    <div style="position: relative">
+                                        <a href="#product/id"><img src="img/product-thumb-1.jpg" alt="{{$sellP->name}}"
+                                                                   class="product-thumb"></a>
+                                        <h2><a href="#product/id">{{$sellP->name}}</a></h2>
+                                        <div class="product-wid-rating">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                        <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$sellP->id}}"
+                                                style="position: absolute; top: 0; right: 0;">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </button>
+                                    </div>
+                                    <div class="product-wid-price">
+                                        <span style="color: red;">{{'(-'. ($sellP->discount_percent * 100) . '%)'}}</span>
+                                        <ins>{{number_format((float)$sellP->current_price - ($sellP->current_price * $sellP->discount_percent), 2,",", ".") . ' VNĐ'}}</ins>
+                                        <del>{{number_format((float)$sellP->current_price,2,",", ".") . ' VNĐ'}}</del>
+                                    </div>
+                                </div>
+                                @endforeach
+                            @endforeach
+                        @endif
                     </div>
                 </div>
+
                 <div class="col-md-4">
                     <div class="single-product-widget">
-                        <h2 class="product-wid-title">Top New</h2>
-                        <a href="#" class="wid-view-more">View All</a>
-                        <div class="single-wid-product">
-                            <a href="#product/id"><img src="img/product-thumb-3.jpg" alt=""
-                                                               class="product-thumb"></a>
-                            <h2><a href="#product/id">Apple new i phone 6</a></h2>
-                            <div class="product-wid-rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
+                        <div style="text-align: center"><h2 class="product-wid-title">Siêu giảm giá</h2></div>
+                        @if($topSaleProducts->isEmpty())
+                            <div style="text-align: center">
+                                <p style="color: green; font-size: 30px;">Đang cập nhật dữ liệu</p>
                             </div>
-                            <div class="product-wid-price">
-                                <ins>$400.00</ins>
-                                <del>$425.00</del>
-                            </div>
-                        </div>
-                        <div class="single-wid-product">
-                            <a href="#product/id"><img src="img/product-thumb-4.jpg" alt=""
-                                                               class="product-thumb"></a>
-                            <h2><a href="#product/id">Samsung gallaxy note 4</a></h2>
-                            <div class="product-wid-rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
-                            <div class="product-wid-price">
-                                <ins>$400.00</ins>
-                                <del>$425.00</del>
-                            </div>
-                        </div>
-                        <div class="single-wid-product">
-                            <a href="#product/id"><img src="img/product-thumb-1.jpg" alt=""
-                                                               class="product-thumb"></a>
-                            <h2><a href="#product/id">Sony playstation microsoft</a></h2>
-                            <div class="product-wid-rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
-                            <div class="product-wid-price">
-                                <ins>$400.00</ins>
-                                <del>$425.00</del>
-                            </div>
-                        </div>
+                        @else
+                            @foreach($topSaleProducts as $saleP)
+                                <div class="single-wid-product">
+                                    <div style="position: relative">
+                                        <a href="#product/id"><img src="img/product-thumb-4.jpg" alt="{{$saleP->name}}"
+                                                                   class="product-thumb"></a>
+                                        <h2><a href="#product/id">{{$saleP->name}}</a></h2>
+                                        <div class="product-wid-rating">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                        <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$saleP->id}}"
+                                                style="position: absolute; top: 0; right: 0;">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </button>
+                                    </div>
+                                    <div class="product-wid-price">
+                                        <span style="color: red;">{{'(-'. ($saleP->discount_percent * 100) . '%)'}}</span>
+                                        <ins>{{number_format((float)$saleP->current_price - ($saleP->current_price * $saleP->discount_percent), 2,",", ".") . ' VNĐ'}}</ins>
+                                        <del>{{number_format((float)$saleP->current_price,2,",", ".") . ' VNĐ'}}</del>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
