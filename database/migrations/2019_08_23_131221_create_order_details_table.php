@@ -19,7 +19,7 @@ class CreateOrderDetailsTable extends Migration
             $table->unsignedBigInteger('product_id');
             $table->decimal('amount', 10, 2);
             $table->decimal('discount_amount', 10, 2);
-            $table->tinyInteger('quantity');
+            $table->smallInteger('quantity');
             /*$table->string('serial');
             $table->string('imei_1');
             $table->string('imei_2')->nullable();*/
