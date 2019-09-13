@@ -256,12 +256,12 @@
                             </div>
                         @else
                             @foreach ($topSellProduct as $listP)
-                                @foreach ($listP as $sellP)
+                                {{--@foreach ($listP as $sellP)--}}
                                 <div class="single-wid-product">
                                     <div style="position: relative">
-                                        <a href="#product/id"><img src="img/product-thumb-1.jpg" alt="{{$sellP->name}}"
+                                        <a href="#product/id"><img src="img/product-thumb-1.jpg" alt="{{$listP->name}}"
                                                                    class="product-thumb"></a>
-                                        <h2><a href="#product/id">{{$sellP->name}}</a></h2>
+                                        <h2><a href="#product/id">{{$listP->name}}</a></h2>
                                         <div class="product-wid-rating">
                                             <i class="fa fa-star"></i>
                                             <i class="fa fa-star"></i>
@@ -269,18 +269,18 @@
                                             <i class="fa fa-star"></i>
                                             <i class="fa fa-star"></i>
                                         </div>
-                                        <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$sellP->id}}"
+                                        <button type="submit" class="btn-add-to-cart" id="btnAddToCart{{$listP->id}}"
                                                 style="position: absolute; top: 0; right: 0;">
                                             <i class="fa fa-shopping-cart"></i>
                                         </button>
                                     </div>
                                     <div class="product-wid-price">
-                                        <span style="color: red;">{{'(-'. ($sellP->discount_percent * 100) . '%)'}}</span>
-                                        <ins>{{number_format((float)$sellP->current_price - ($sellP->current_price * $sellP->discount_percent), 2,",", ".") . ' VNĐ'}}</ins>
-                                        <del>{{number_format((float)$sellP->current_price,2,",", ".") . ' VNĐ'}}</del>
+                                        <span style="color: red;">{{'(-'. ($listP->discount_percent * 100) . '%)'}}</span>
+                                        <ins>{{number_format((float)$listP->current_price - ($listP->current_price * $listP->discount_percent), 2,",", ".") . ' VNĐ'}}</ins>
+                                        <del>{{number_format((float)$listP->current_price,2,",", ".") . ' VNĐ'}}</del>
                                     </div>
                                 </div>
-                                @endforeach
+                                {{--@endforeach--}}
                             @endforeach
                         @endif
                     </div>

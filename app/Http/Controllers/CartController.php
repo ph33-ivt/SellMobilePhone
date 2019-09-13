@@ -113,7 +113,7 @@ class CartController extends Controller
 
     public function updateCart(Request $request)
     {
-        //dd($request);exit;
+        //dd($qty = $request->input('qty-product-99'));
 
         $oldCart = Session::has('cart') ? Session::get('cart') : null;
         //dd(($oldCart->items));exit;
@@ -133,7 +133,11 @@ class CartController extends Controller
 
         foreach ($cart->items as $product_id => $sub_key) {
             $qty = $request->input('qty-product-' . $product_id);
-            //echo $qty;
+            if ($qty == null) {
+                return redirect()->back()
+                    ->withErrors(['qtyProduct'.$product_id => 'Bạn chưa nhập số lượng!',])
+                    ->withInput();
+            }
             //$qty = $qty[$product_id] = Input::get('qty-product-'.$product_id);
             $cart->update($product_id, $qty);
         }//exit;
