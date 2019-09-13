@@ -42,12 +42,16 @@ class HomeController extends Controller
 
 
         $topSell = OrderDetail::selectRaw('product_id, sum(quantity) as qty')
-            ->groupBy('product_id') ->orderBy('qty', 'desc')->take(3)->get();
+            ->groupBy('product_id') ->orderBy('qty', 'desc')->take(3)->get()->pluck('product_id');
+        //dd($topSell);
 
-        $topSellProduct = array();
+        $topSellProduct = Product::whereIn('id', $topSell)->get();
+        //dd($topSellProduct);
+
+        /*$topSellProduct = array();
         foreach ($topSell as $v) {
             $topSellProduct[] = Product::where('id', $v->product_id)->get();
-        }
+        }*/
 
         /*$a = array();
         foreach ($listBrand as $brand) {
