@@ -29,10 +29,13 @@ Route::get('/add-to-cart/{product_id}', 'CartController@addProductToCart')->name
 Route::get('/remove-from-cart/{product_id}', 'CartController@removeProductFromCart')->name('remove-product-from-cart');// xoa san pham khoi gio hang
 //Route::delete('/remove-from-cart/{product_id}', 'CartController@removeProductFromCart')->name('remove-product-from-cart');// xoa san pham khoi gio hang
 Route::get('/update-cart', 'CartController@updateCart')->name('update-cart'); // cap nhat gio hang
+Route::get('/delete-cart', 'CartController@deleteCart')->name('delete-cart'); // cap nhat gio hang
 //Route::put('/update-cart', 'CartController@updateCart')->name('update-cart'); // cap nhat gio hang
 Route::get('/checkout', 'CartController@checkout')->name('checkout'); // gui don dat hang
 
 Route::post('/feedback', 'FeedbackController@sendFeedback')->name('feedback'); //gui email gop y
+
+Route::get('/list-order', 'OrderController@listOrderOfUser')->name('order-history'); //lich su dat hang
 
 Route::get('/sign-up', 'UserController@create')->name('form-register'); // goi form dang ky
 Route::post('/sign-up', 'UserController@store')->name('create-user'); // tao nguoi dung moi
