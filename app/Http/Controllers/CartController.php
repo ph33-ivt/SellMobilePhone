@@ -49,7 +49,6 @@ class CartController extends Controller
         /*$data = $request->only('qty');*/
 
         $oldCart = Session::has('cart') ? Session::get('cart') : null;
-
         //dd(Session::get('cart')->items);exit;
 
         if ($oldCart != null) {
@@ -138,6 +137,7 @@ class CartController extends Controller
                     ->withErrors(['qtyProduct'.$product_id => 'Bạn chưa nhập số lượng!',])
                     ->withInput();
             }
+
             //$qty = $qty[$product_id] = Input::get('qty-product-'.$product_id);
             $cart->update($product_id, $qty);
         }//exit;
@@ -155,12 +155,25 @@ class CartController extends Controller
         return redirect()->back();
     }
 
+    public function deleteCart()
+    {
+        /*$oldCart = Session::has('cart') ? Session::get('cart') : null;
+        if ($oldCart == null) {
+            return response()->json(['message' => 'Cart is empty!',], 200);
+        }
+        $request->session()->forget('cart');*/
+
+        Session::forget('cart');
+        return redirect()->route('homepage')->with('success', 'Giỏ hàng của bạn đã được hủy!');
+    }
+
     public function checkout(Request $request)
     {
         $oldCart = Session::has('cart') ? Session::get('cart') : null;
         if ($oldCart == null) {
             return response()->json(['message' => 'Cart is empty!',], 200);
         }
+
         $cart = new Cart($oldCart);
         //dd($cart->items);exit;
         /*foreach ($cart->items as $product_id => $product) {
@@ -238,10 +251,11 @@ class CartController extends Controller
                     $this->createOrderDetails($insertedOrderId, $product_id, $amount, $discount_amount, $value['qty']);
 
                     $oldQty = Product::find($product_id)->quantity;
-                    $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
+                    $this->updateQuantityProducts($product_id, ($oldQty - $value['qty']));
                 }
 
-            } else {
+            }
+            else {
 
                 if ($validator->fails()) {
                     return redirect()->back()->withErrors($validator->errors())->withInput();
@@ -263,7 +277,7 @@ class CartController extends Controller
                         $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
 
                         $oldQty = Product::find($product_id)->quantity;
-                        $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
+                        $this->updateQuantityProducts($product_id, ($oldQty - $value['qty']));
                     }
                 }
 
@@ -278,11 +292,12 @@ class CartController extends Controller
                         $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
 
                         $oldQty = Product::find($product_id)->quantity;
-                        $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
+                        $this->updateQuantityProducts($product_id, ($oldQty - $value['qty']));
                     }
                 }
             }
-        } else {
+        }
+        else {
             $sessionUser = $request->session()->get('user');
             $insertedUserID = User::where('phone', $sessionUser['user_phone'])->first();
 
@@ -297,9 +312,10 @@ class CartController extends Controller
                     $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
 
                     $oldQty = Product::find($product_id)->quantity;
-                    $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
+                    $this->updateQuantityProducts($product_id, ($oldQty - $value['qty']));
                 }
-            } else {
+            }
+            else {
 
                 if ($validator_receiver->fails()) {
                     //dd($validator->errors());
@@ -316,7 +332,7 @@ class CartController extends Controller
                         $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
 
                         $oldQty = Product::find($product_id)->quantity;
-                        $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
+                        $this->updateQuantityProducts($product_id, ($oldQty - $value['qty']));
                     }
                 }
 
@@ -331,7 +347,7 @@ class CartController extends Controller
                         $this->createOrderDetails($insertedOrderID['id'], $product_id, $amount, $discount_amount, $value['qty']);
 
                         $oldQty = Product::find($product_id)->quantity;
-                        $this->updateQuantityProduct($product_id, ($oldQty - $value['qty']));
+                        $this->updateQuantityProducts($product_id, ($oldQty - $value['qty']));
                     }
                 }
             }
@@ -344,7 +360,7 @@ class CartController extends Controller
         return redirect()->route('homepage')->with('success', 'Đặt hàng thành công!');
     }
 
-    public function createSessionUser($request, $name, $address, $phone, $email)
+    private function createSessionUser($request, $name, $address, $phone, $email)
     {
         $u = array();
         $u['user_name'] = $name;
@@ -354,7 +370,7 @@ class CartController extends Controller
         $request->session()->put('user', $u);
     }
 
-    public function createUsers($name, $address, $phone, $email)
+    private function createUsers($name, $address, $phone, $email)
     {
         $dataUser = [
             'username' => str_replace(' ', '', $phone),
@@ -367,7 +383,7 @@ class CartController extends Controller
         User::insert($dataUser);
     }
 
-    public function createOrders($userId, $phoneReceiver, $shipAddress, $billAddress)
+    private function createOrders($userId, $phoneReceiver, $shipAddress, $billAddress)
     {
         $dataOrder = [
             'user_id' => $userId,
@@ -380,7 +396,7 @@ class CartController extends Controller
         Order::insert($dataOrder);
     }
 
-    public function createOrderDetails($orderId, $productId, $amount, $discountAmount, $quantity)
+    private function createOrderDetails($orderId, $productId, $amount, $discountAmount, $quantity)
     {
         $dataOrderDetail = [
             'order_id' => $orderId,
@@ -392,7 +408,7 @@ class CartController extends Controller
         OrderDetail::insert($dataOrderDetail);
     }
 
-    public function updateQuantityProduct($productID, $qty) {
+    private function updateQuantityProducts($productID, $qty) {
         Product::where('id', $productID)->update(['quantity' => $qty]);
     }
 
