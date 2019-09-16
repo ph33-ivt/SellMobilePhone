@@ -40,7 +40,6 @@ class HomeController extends Controller
 
         $topSaleProducts = Product::orderBy('discount_percent', 'DESC')->take(3)->get();
 
-
         $topSell = OrderDetail::selectRaw('product_id, sum(quantity) as qty')
             ->groupBy('product_id') ->orderBy('qty', 'desc')->take(3)->get()->pluck('product_id');
         //dd($topSell);
@@ -78,6 +77,7 @@ class HomeController extends Controller
                 ['brand_id', $brand->id],
                 ['quantity', '>', 0],
             ])->orderBy('current_price', 'DESC')->take(7)->get();
+            //])->orderByRaw('current_price - (current_price * discount_percent) desc')->take(7)->get();
         }
 
         //dd($listAllProduct);exit;
