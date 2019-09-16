@@ -187,18 +187,31 @@
     </div>
 </div> <!-- End mainmenu area -->
 
+<style>
+    .alert-success {text-align: center; font-size: 30px;}
+    .alert-success strong{color: darkorange;}
+    .alert-success .btnCloseMessage {color: black; margin-left: 20px;}
+    .alert-success .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}
+
+    .alert-info {position:fixed; right: 0; text-align: center; font-size: 30px; z-index: 9999; display: none;}
+    .alert-info strong{color: darkorange; margin-right: 20px;}
+    .alert-info .btnCloseMessage {color: black; float: right;}
+    .alert-info .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}
+</style>
 @if(session('success'))
-    <style>
-        .alert-success {text-align: center; font-size: 30px;}
-        .alert-success strong{color: darkorange;}
-        .alert-success .btnCloseMessage {color: black; margin-left: 20px;}
-        .alert-success .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}
-    </style>
     <div class="alert alert-success">
         <strong>{{session('success')}}</strong>
         <span class="btnCloseMessage" onclick="this.parentElement.style.display='none';">&times;</span>
     </div>
 @endif
+
+@if(session('notify'))
+    <div class="alert alert-success">
+        <strong>{{session('notify')}}</strong>
+        <span class="btnCloseMessage" onclick="this.parentElement.style.display='none';">&times;</span>
+    </div>
+@endif
+
 @if($errors->has('message') || $errors->has('user_email'))
     <script>
         $(document).ready(function () {
@@ -206,12 +219,7 @@
         });
     </script>
 @endif
-<style>
-    .alert-info {position:fixed; right: 0; text-align: center; font-size: 30px; z-index: 9999; display: none;}
-    .alert-info strong{color: darkorange; margin-right: 20px;}
-    .alert-info .btnCloseMessage {color: black; float: right;}
-    .alert-info .btnCloseMessage:hover {color: red; cursor: pointer; transition: 0.3s;}
-</style>
+
 <div class="alert alert-info" >
     <strong></strong>
     <span class="btnCloseMessage" {{--onclick="this.parentElement.style.display='none';"--}}>&times;</span>
