@@ -35,7 +35,11 @@
             // $('.user-phone').change(function () { $('.receiver-phone').val($(this).val()); });
             // $('.user-email').change(function () { $('.receiver-email').val($(this).val()); });
 
-            $(":input").inputmask();
+            //$(":input").inputmask();
+            $("input.user-phone").inputmask();
+            $("input.receiver-phone").inputmask();
+            //$("input.input-qty").inputmask('Regex', { regex: "^[0-9]"});
+
         });
     </script>
 
@@ -107,15 +111,10 @@
                                     );
                                 } else {
                                     //alert('Số lượng tối thiểu bằng 1');
-                                    $('.cart-notify').html(': Số lượng tối thiểu bằng 1').delay(2000).fadeOut('slow');
-                                    setTimeout(function () {
-                                        $('.cart-notify').html('').fadeIn();
-                                    }, 2500);
 
                                     $('div.alert-info').css('display', 'block');
                                     $('div.alert-info strong').html('Số lượng tối thiểu bằng 1');
                                 }
-
                                 $('div.alert-info span').click(function (e) {
                                     e.preventDefault();
                                     $('div.alert-info').fadeOut('slow');
@@ -185,10 +184,6 @@
                                     );
                                 } else {
                                     //alert('Mặt hàng này chỉ còn: ' + currentQty + ' cái.');
-                                    $('.cart-notify').html(': Mặt hàng này chỉ còn: ' + currentQty + ' cái.').delay(2000).fadeOut('slow');
-                                    setTimeout(function () {
-                                        $('.cart-notify').html('').fadeIn();
-                                    }, 2500);
 
                                     $('div.alert-info').css('display', 'block');
                                     $('div.alert-info strong').html('Mặt hàng này chỉ còn: ' + currentQty + ' cái.');
@@ -209,15 +204,15 @@
                                 $(this).data('val', $(this).val());
                             });
                             $("#input-qty-{{$product_id}}").change(function () {
-                                if (Number.isInteger($(this).val()) || $(this).val() < 1) {
-                                    $('.cart-notify').html(': Số lượng phải là số nguyên dương!').delay(2000).fadeOut('slow');
-                                    setTimeout(function () {
-                                        $('.cart-notify').html('').fadeIn();
-                                    }, 2500);
-
+                                if($(this).val() == '') {
+                                    $('div.alert-info').css('display', 'block');
+                                    $('div.alert-info strong').html('Số lượng không được bỏ trống!');
+                                }
+                                else if (Number.isInteger($(this).val()) || $(this).val() < 1) {
                                     $('div.alert-info').css('display', 'block');
                                     $('div.alert-info strong').html('Số lượng phải là số nguyên dương!');
-                                } else {
+                                }
+                                else {
                                     var currentQty = parseInt("{{$product->quantity}}");
                                     var inputQty = parseInt($("#input-qty-{{$product_id}}").val());
 
@@ -269,10 +264,6 @@
                                         );
                                     }else {
                                         //alert('Mặt hàng này chỉ còn: ' + currentQty + ' cái.');
-                                        $('.cart-notify').html(': Mặt hàng này chỉ còn: ' + currentQty + ' cái.').delay(2000).fadeOut('slow');
-                                        setTimeout(function () {
-                                            $('.cart-notify').html('').fadeIn();
-                                        }, 2500);
 
                                         $('div.alert-info').css('display', 'block');
                                         $('div.alert-info strong').html('Mặt hàng này chỉ còn: ' + currentQty + ' cái.');
@@ -280,16 +271,16 @@
                                         //alert($(this).data('val'));
                                         $(this).val($(this).data('val'));
                                     }
-
-                                    $('div.alert-info span').click(function (e) {
-                                        e.preventDefault();
-                                        $('div.alert-info').fadeOut('slow');
-                                    });
-
-                                    setTimeout(function () {
-                                        $('div.alert-info').fadeOut('slow');
-                                    }, 1500);
                                 }
+
+                                $('div.alert-info span').click(function (e) {
+                                    e.preventDefault();
+                                    $('div.alert-info').fadeOut('slow');
+                                });
+
+                                setTimeout(function () {
+                                    $('div.alert-info').fadeOut('slow');
+                                }, 1500);
                             });
                             {{-- edit quantity (end change input function)--}}
                         @endif
@@ -505,8 +496,10 @@
                             {{-- List product--}}
                             <div class="col-md-12 product-content-right">
                                 <div class="woocommerce">
-                                    <h2>Giỏ hàng của bạn<span class="cart-notify" style="color: orangered;"></span>
+                                    <h2>Giỏ hàng của bạn
+                                        {{--<span class="cart-notify" style="color: orangered;"></span>--}}
                                     </h2>
+                                    <h3>(Vui lòng cập nhật giỏ hàng trước khi thanh toán!)</h3>
                                     {{--<form method="post" action="{{route('update-cart')}}">
                                         @csrf
                                         @method('PUT')--}}
@@ -566,12 +559,20 @@
                                                                        id="btn-minus-{{$product_id}}"
                                                                        class="btn-minus minus">
 
-                                                                <input type="number"
+                                                                <style>::placeholder {opacity: 0.2;}</style>
+                                                                <input type="number" pattern="\d*"
                                                                        name="qty-product-{{$product_id}}" size="5"
                                                                        id="input-qty-{{$product_id}}"
                                                                        class="input-text input-qty"
-                                                                       title="Số lượng phải là số nguyên dương"
-                                                                       value="{{$v['qty']}}" min="1" step="1">
+                                                                       title="Số lượng phải là số nguyên dương."
+                                                                       min="1" step="1"
+                                                                       @if($errors->has('qtyProduct'.$product_id))
+                                                                       value="{{old('qty-product-'.$product_id)}}"
+                                                                       placeholder="{{$v['qty']}}"
+                                                                       @else
+                                                                       value="{{$v['qty']}}"
+                                                                       @endif
+                                                                       required>
 
                                                                 <input type="button" value="+"
                                                                        id="btn-plus-{{$product_id}}"
@@ -616,6 +617,14 @@
                                                             </a>--}}
                                                         </td>
                                                     </tr>
+                                                    @if($errors->has('qtyProduct'.$product_id))
+                                                        <tr class="qty-error-mesage" style="color: red;">
+                                                            {{--<td colspan="8" > {{$errors}} </td>--}}
+                                                            <td colspan="8" >
+                                                                {{$errors->first('qtyProduct'.$product_id)}}
+                                                            </td>
+                                                        </tr>
+                                                    @endif
                                                 @endforeach
                                                 <tr>
                                                     <td class="no-border" colspan="2"><b>Tổng:</b></td>
@@ -638,6 +647,10 @@
                                                 <tfoot>
                                                 <tr>
                                                     <td class="actions" colspan="8">
+                                                        <a href="{{route('delete-cart')}}" class="delete-cart-link"
+                                                                name="delete_cart" class="button" id="btnDeleteCart">
+                                                            Hủy giỏ hàng
+                                                        </a>
                                                         {{--<input type="submit" value="Cập nhật giỏ hàng" name="update_cart"
                                                                class="button" id="btnUpdateCart">--}}
                                                         <button type="submit" name="update_cart"
@@ -709,6 +722,7 @@
                 </div>
             </div>
         </div>
+
         <script type="text/javascript">
             $(document).ready(function () {
                 $('#receiver_pay').on('click', function () {
@@ -716,7 +730,26 @@
                 });
                 $('#user_pay').on('click', function () {
                     $(this).val('user_pay');
-                })
+                });
+
+                $("input.input-qty").on("keypress keyup blur",function (event) {
+                    //$(this).val($(this).val().replace(/[^\d].+/, ""));
+                    if ((event.which < 48 || event.which > 57)) {
+                        event.preventDefault();
+                    }
+                });
+
+                setTimeout(function () {
+                    $("tr.qty-error-mesage").fadeOut('slow');
+                }, 5000);
+
+                @if(Session::get('cart') !== null)
+                    @foreach($getCart as $product_id => $v)
+                        @if($errors->has('qtyProduct'.$product_id))
+                        $('#show-me').removeClass('in');
+                        @endif
+                    @endforeach
+                @endif
             })
         </script>
 @endsection
