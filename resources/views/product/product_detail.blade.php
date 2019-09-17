@@ -11,7 +11,7 @@
                     @foreach($listBrand as $brand)
                         @if($product->brand_id == $brand->id)
                             $('div.navbar-collapse ul li a.phone-{{$brand->name}}').closest("li").addClass("active");
-                            //alert("{{$brand->name}}");
+                            {{--alert("{{$brand->name}}");--}}
                         @endif
                     @endforeach
                 }else {
@@ -79,7 +79,7 @@
                             $('div.alert-info').fadeOut('slow');
                         }, 1500);
                     },
-                    error: function (error) {
+                    error: function (data) {
                         console.log('Error:', data);
                     }
                 });
@@ -99,7 +99,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h2 class="product-name">{{$product->name}}</h2>
+                    <h2 class="product-name">{{$prd->name}}</h2>
                     <div class="product-images">
                         <div class="product-main-img">
                             <img src="img/product-2.jpg" alt="">
@@ -242,120 +242,63 @@
 
                     <div role="tabpanel" class="tab-pane fade" id="same-price">
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="single-sidebar">
-                                    <h3 class="sidebar-title">iPhone</h3>
-                                    <div class="thubmnail-recent" style="position: relative;">
-                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                        <h2><a href="">Sony Smart TV - 2015</a></h2>
-                                        <div class="product-sidebar-price">
-                                            <ins>$700.00</ins> <del>$100.00</del>
+                            @if(isset($listAccessoriesSamePrice))
+                                @if(sizeof($listAccessoriesSamePrice)==0)
+                                <div>Không có phụ kiện nào có mức giá tương tự</div>
+                                @else
+                                    <h3 class="sidebar-title text-center">Phụ Kiện Có Mức Giá Tương Tự</h3>
+                                    @foreach ($listAccessoriesSamePrice as $listAccessories)
+                                        <div class="col-md-4">
+                                            <div class="single-sidebar">
+                                                @foreach($listAccessories as $accessories)
+                                                    <div class="thubmnail-recent" style="position: relative;">
+                                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
+                                                        <h2><a href="product/{{$accessories->id}}">{{$accessories->name}}</a></h2>
+                                                        <div class="product-sidebar-price">
+                                                            <span style="color: red">(-{{$accessories->discount_percent * 100}}%)</span>
+                                                            <ins>{{number_format((float)$accessories->current_price - ($accessories->current_price * $accessories->discount_percent),2,",", ".")}}<sup>₫</sup></ins>
+                                                            <del>{{number_format((float)$accessories->current_price,2,",", ".")}}<sup>₫</sup></del>
+                                                        </div>
+                                                        <button id="btnAddToCart{{$accessories->id}}" class="add_to_cart_button" type="submit"
+                                                                style="position: absolute; top: 5px; right: 0;">
+                                                            <i class="fa fa-shopping-cart"></i>
+                                                        </button>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                        <button class="add_to_cart_button" type="submit"
-                                                style="position: absolute; top: 5px; right: 0;">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                    <div class="thubmnail-recent" style="position: relative;">
-                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                        <h2><a href="">Sony Smart TV - 2015</a></h2>
-                                        <div class="product-sidebar-price">
-                                            <ins>$700.00</ins> <del>$100.00</del>
-                                        </div>
-                                        <button class="add_to_cart_button" type="submit"
-                                                style="position: absolute; top: 5px; right: 0;">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                    <div class="thubmnail-recent" style="position: relative;">
-                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                        <h2><a href="">Sony Smart TV - 2015</a></h2>
-                                        <div class="product-sidebar-price">
-                                            <ins>$700.00</ins> <del>$100.00</del>
-                                        </div>
-                                        <button class="add_to_cart_button" type="submit"
-                                                style="position: absolute; top: 5px; right: 0;">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="single-sidebar">
-                                    <h3 class="sidebar-title">Vsmart</h3>
-                                    <div class="thubmnail-recent" style="position: relative;">
-                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                        <h2><a href="">Sony Smart TV - 2015</a></h2>
-                                        <div class="product-sidebar-price">
-                                            <ins>$700.00</ins> <del>$100.00</del>
-                                        </div>
-                                        <button class="add_to_cart_button" type="submit"
-                                                style="position: absolute; top: 5px; right: 0;">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                    <div class="thubmnail-recent" style="position: relative;">
-                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                        <h2><a href="">Sony Smart TV - 2015</a></h2>
-                                        <div class="product-sidebar-price">
-                                            <ins>$700.00</ins> <del>$100.00</del>
-                                        </div>
-                                        <button class="add_to_cart_button" type="submit"
-                                                style="position: absolute; top: 5px; right: 0;">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                    <div class="thubmnail-recent" style="position: relative;">
-                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                        <h2><a href="">Sony Smart TV - 2015</a></h2>
-                                        <div class="product-sidebar-price">
-                                            <ins>$700.00</ins> <del>$100.00</del>
-                                        </div>
-                                        <button class="add_to_cart_button" type="submit"
-                                                style="position: absolute; top: 5px; right: 0;">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
+                                    @endforeach
+                                @endif
+                            @endif
+
+                            @if(isset($listProductOfBrandSamePrice))
+                                @foreach ($listProductOfBrandSamePrice as $brandName=>$productList)
+                                <div class="col-md-4">
+                                    <div class="single-sidebar">
+                                        <h3 class="sidebar-title text-center">{{$brandName}}</h3>
+                                        @if (sizeof($productList) == 0)
+                                            <div>Không có điện thoại  {{$brandName}}  nào phù hợp với mức giá này</div>
+                                        @else
+                                            @foreach($productList as $p)
+                                            <div class="thubmnail-recent" style="position: relative;">
+                                                <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
+                                                <h2><a href="product/{{$p->id}}">{{$p->name}}</a></h2>
+                                                <div class="product-sidebar-price">
+                                                    <span style="color: red">(-{{$p->discount_percent * 100}}%)</span>
+                                                    <ins>{{number_format((float)$p->current_price - ($p->current_price * $p->discount_percent),2,",", ".")}}<sup>₫</sup></ins>
+                                                    <del>{{number_format((float)$p->current_price,2,",", ".")}}<sup>₫</sup></del>
+                                                </div>
+                                                <button id="btnAddToCart{{$p->id}}" class="add_to_cart_button" type="submit"
+                                                        style="position: absolute; top: 5px; right: 0;">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                </button>
+                                            </div>
+                                            @endforeach
+                                        @endif
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="single-sidebar">
-                                    <h3 class="sidebar-title">Xiaomi</h3>
-                                    <div class="thubmnail-recent" style="position: relative;">
-                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                        <h2><a href="">Sony Smart TV - 2015</a></h2>
-                                        <div class="product-sidebar-price">
-                                            <ins>$700.00</ins> <del>$100.00</del>
-                                        </div>
-                                        <button class="add_to_cart_button" type="submit"
-                                                style="position: absolute; top: 5px; right: 0;">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                    <div class="thubmnail-recent" style="position: relative;">
-                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                        <h2><a href="">Sony Smart TV - 2015</a></h2>
-                                        <div class="product-sidebar-price">
-                                            <ins>$700.00</ins> <del>$100.00</del>
-                                        </div>
-                                        <button class="add_to_cart_button" type="submit"
-                                                style="position: absolute; top: 5px; right: 0;">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                    <div class="thubmnail-recent" style="position: relative;">
-                                        <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                        <h2><a href="">Sony Smart TV - 2015</a></h2>
-                                        <div class="product-sidebar-price">
-                                            <ins>$700.00</ins> <del>$100.00</del>
-                                        </div>
-                                        <button class="add_to_cart_button" type="submit"
-                                                style="position: absolute; top: 5px; right: 0;">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                                @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
