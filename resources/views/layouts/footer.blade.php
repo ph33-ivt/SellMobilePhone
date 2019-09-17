@@ -20,7 +20,7 @@
 
             <div class="col-md-3 col-sm-6">
                 <div class="footer-menu">
-                    <h2 class="footer-wid-title">Thông tin thêm</h2>
+                    <h2 class="footer-wid-title">Chỉ dẫn</h2>
                     <ul>
                         <li><a href="#">Chính sách bảo hành</a></li>
                         <li><a href="#">Chính sách đổi trả</a></li>
