@@ -113,6 +113,7 @@ class CartController extends Controller
     public function updateCart(Request $request)
     {
         //dd($qty = $request->input('qty-product-99'));
+        //dd($request);
 
         $oldCart = Session::has('cart') ? Session::get('cart') : null;
         //dd(($oldCart->items));exit;
@@ -132,27 +133,22 @@ class CartController extends Controller
 
         foreach ($cart->items as $product_id => $sub_key) {
             $qty = $request->input('qty-product-' . $product_id);
+            //$qty = $qty[$product_id] = Input::get('qty-product-'.$product_id);
             if ($qty == null) {
                 return redirect()->back()
                     ->withErrors(['qtyProduct'.$product_id => 'Bạn chưa nhập số lượng!',])
                     ->withInput();
             }
-
-            //$qty = $qty[$product_id] = Input::get('qty-product-'.$product_id);
             $cart->update($product_id, $qty);
         }//exit;
 
         $request->session()->put('cart', $cart);
-        $c = $request->session()->get('cart');
+        //$c = $request->session()->get('cart');
         //dd($c);
 
-        /*$result = [sizeof($c->items), $c->totalPrice, $c->items];
-        return response()->json([
-            'message' => 'The cart has been updated!',
-            'num_price_product' => $result,
-        ], 200);*/
+        //return response()->json(['message' => 'The cart has been updated!',], 200);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Giỏ hàng của bạn đã được cập nhật!');
     }
 
     public function deleteCart()
