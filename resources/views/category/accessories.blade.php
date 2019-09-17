@@ -54,7 +54,7 @@
                             $('div.alert-info').fadeOut('slow');
                         }, 1500);
                     },
-                    error: function (error) {
+                    error: function (data) {
                         console.log('Error:', data);
                     }
                 });
