@@ -24,6 +24,9 @@ class SearchController extends Controller
         $listBrand = Brand::orderBy('id')->get();
 
         $searchValue = $request->only('q');
+        if ($searchValue['q'] == null || $searchValue['q'] == '' || $searchValue['q'] ==' ') {
+            return redirect()->back()->with('notify', 'Không được để trống từ khóa tìm kiếm!');
+        }
 
         if (is_numeric($searchValue['q'])) {
             /*$listProduct = Product::where([
@@ -31,13 +34,14 @@ class SearchController extends Controller
                 ['current_price', '<=', $searchValue['q'] + $searchValue['q'] * 0.2]
             ]) ->paginate(8)->appends(Input::except('page'));*/
 
-            $listProduct = Product::whereRaw("current_price - (current_price * discount_percent) >= ?", array($searchValue['q'] - $searchValue['q'] * 0.2))
-                ->whereRaw('current_price - (current_price * discount_percent) <= ?', array($searchValue['q'] + $searchValue['q'] * 0.2))
+            $listProduct = Product::whereRaw("current_price - (current_price * discount_percent) >= ?", $searchValue['q'] - $searchValue['q'] * 0.2)
+                ->whereRaw('current_price - (current_price * discount_percent) <= ?', $searchValue['q'] + $searchValue['q'] * 0.2)
                 ->paginate(8)->appends(Input::except('page'));
 
 
         } else {
-            $listProduct = Product::where('name', 'LIKE', '%' . $searchValue['q'] . '%') ->paginate(8)->appends(Input::except('page'));
+            $listProduct = Product::where('name', 'LIKE', '%' . $searchValue['q'] . '%')
+                ->paginate(8)->appends(Input::except('page'));
         }
         //dd($listProduct->total());
 

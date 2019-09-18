@@ -72,7 +72,7 @@
                             $('div.alert-info').fadeOut('slow');
                         }, 1500);
                     },
-                    error: function (error) {
+                    error: function (data) {
                         console.log('Error:', data);
                     }
                 });
@@ -221,9 +221,10 @@
                             @foreach($topNewProducts as $newP)
                                 <div class="single-wid-product">
                                     <div style="position: relative">
-                                        <a href="#product/id"><img src="img/product-thumb-2.jpg" alt="{{$newP->name}}"
-                                                                   class="product-thumb"></a>
-                                        <h2><a href="#product/id">{{$newP->name}}</a></h2>
+                                        <a href="product/{{$newP->id}}">
+                                            <img src="img/product-thumb-2.jpg" alt="{{$newP->name}}" class="product-thumb">
+                                        </a>
+                                        <h2><a href="product/{{$newP->id}}">{{$newP->name}}</a></h2>
                                         <div class="product-wid-rating">
                                             <i class="fa fa-star"></i>
                                             <i class="fa fa-star"></i>
@@ -259,9 +260,9 @@
                                 {{--@foreach ($listP as $sellP)--}}
                                 <div class="single-wid-product">
                                     <div style="position: relative">
-                                        <a href="#product/id"><img src="img/product-thumb-1.jpg" alt="{{$listP->name}}"
+                                        <a href="product/{{$listP->id}}"><img src="img/product-thumb-1.jpg" alt="{{$listP->name}}"
                                                                    class="product-thumb"></a>
-                                        <h2><a href="#product/id">{{$listP->name}}</a></h2>
+                                        <h2><a href="product/{{$listP->id}}">{{$listP->name}}</a></h2>
                                         <div class="product-wid-rating">
                                             <i class="fa fa-star"></i>
                                             <i class="fa fa-star"></i>
@@ -297,9 +298,9 @@
                             @foreach($topSaleProducts as $saleP)
                                 <div class="single-wid-product">
                                     <div style="position: relative">
-                                        <a href="#product/id"><img src="img/product-thumb-4.jpg" alt="{{$saleP->name}}"
+                                        <a href="product/{{$saleP->id}}"><img src="img/product-thumb-4.jpg" alt="{{$saleP->name}}"
                                                                    class="product-thumb"></a>
-                                        <h2><a href="#product/id">{{$saleP->name}}</a></h2>
+                                        <h2><a href="product/{{$saleP->id}}">{{$saleP->name}}</a></h2>
                                         <div class="product-wid-rating">
                                             <i class="fa fa-star"></i>
                                             <i class="fa fa-star"></i>
