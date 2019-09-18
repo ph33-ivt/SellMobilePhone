@@ -52,21 +52,26 @@ class ProductController extends Controller
         $listAllProduct = Product::all();
         $prd = Product::find($id);
 
-        $listProduct = Product::where([
-            ['brand_id', $prd->brand_id],
-            ['quantity', '>', 0]
-        ])->orderBy('current_price')->take(7)->get();
-        //dd($product->description);
-
         $price =  $prd->current_price - ($prd->current_price * $prd->discount_percent);
 
+        $listProduct = Product::where([
+            ['brand_id', $prd->brand_id],
+            ['quantity', '>', 0],
+            ['id', '!=', $prd->id],
+          ])->whereRaw("current_price - (current_price * discount_percent) >= ?", $price - $price*0.2)
+            ->whereRaw("current_price - (current_price * discount_percent) <= ?", $price + $price*0.2)
+            ->orderByRaw("current_price - (current_price * discount_percent) desc")
+            ->take(9)->get()->chunk(3);
+        //dd($listProduct);
+
         if ($prd->category_id == 2) {
-            $listAccessoriesSamePrice = Product::where('category_id', 2)
-                ->whereRaw("current_price - (current_price * discount_percent) >= ?", $price - $price*0.2)
+            $listAccessoriesSamePrice = Product::where([
+                ['category_id', 2],
+                ['id', '!=', $prd->id]
+              ])->whereRaw("current_price - (current_price * discount_percent) >= ?", $price - $price*0.2)
                 ->whereRaw("current_price - (current_price * discount_percent) <= ?", $price + $price*0.2)
                 ->orderByRaw("current_price - (current_price * discount_percent) desc")
                 ->take(9)->get()->chunk(3);
-
             //dd($listAccessoriesSamePrice);
 
             return view('product.product_detail',

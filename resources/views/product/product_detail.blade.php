@@ -199,108 +199,115 @@
             <div role="tabpanel">
                 <ul class="product-tab" role="tablist">
                     <li role="presentation" class="active">
-                        <a href="#same-brand" aria-controls="same-brand" role="tab" data-toggle="tab">Cùng loại</a>
+                        <a href="#same-price" aria-controls="same-price" role="tab" data-toggle="tab">
+                            @if(isset($listAccessoriesSamePrice))
+                            Phụ kiện cùng mức giá
+                            @else
+                            Điện thoại cùng mức giá
+                            @endif
+                        </a>
                     </li>
+                    @if(!isset($listAccessoriesSamePrice))
                     <li role="presentation">
-                        <a href="#same-price" aria-controls="same-price" role="tab" data-toggle="tab">Mức giá tương
-                            tự</a>
+                        <a href="#same-brand" aria-controls="same-brand" role="tab" data-toggle="tab">
+                            @foreach($listBrand as $brand)
+                                @if($prd->brand_id == $brand->id)
+                                    Cùng hãng {{$brand->name}}
+                                @endif
+                            @endforeach
+                        </a>
                     </li>
+                    @endif
                 </ul>
                 <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane fade in active" id="same-brand">
-                        <div class="latest-product">
-                            <div class="product-carousel">
-                                @foreach($listProduct as $p)
-                                    <div class="single-product">
-                                        <div class="product-f-image">
-                                            <img src="img/product-1.jpg" alt="">
-                                            <div class="product-hover">
-                                                {{--<a href="" class="add-to-cart-link">
-                                                    <i class="fa fa-shopping-cart"></i> Add to cart</a>--}}
-                                                <button class="btn-add-to-cart" id="btnAddToCart{{$p->id}}">
-                                                    <i class="fa fa-shopping-cart"> Thêm vào giỏ hàng</i>
-                                                </button>
-                                                <a href="{{route('product-detail', $p->id)}}" class="view-details-link">
-                                                    <i class="fa fa-link"> Xem chi tiết</i>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <h2><a href="">{{$p->name}}</a></h2>
-
-                                        <div class="product-carousel-price">
-                                            <span style="color: red;">{{'(-'. ($p->discount_percent * 100) . '%)'}}</span>
-                                            <ins>{{number_format((float)($p->current_price - ($p->current_price * $p->discount_percent)),2,",", ".") .' VNĐ'}}</ins>
-                                            <br>
-                                            <del>{{number_format((float)$p->current_price,2,",", ".") . ' VNĐ'}}</del>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-
-                    <div role="tabpanel" class="tab-pane fade" id="same-price">
-                        <div class="row">
-                            @if(isset($listAccessoriesSamePrice))
-                                @if(sizeof($listAccessoriesSamePrice)==0)
-                                <div>Không có phụ kiện nào có mức giá tương tự</div>
-                                @else
-                                    <h3 class="sidebar-title text-center">Phụ Kiện Có Mức Giá Tương Tự</h3>
-                                    @foreach ($listAccessoriesSamePrice as $listAccessories)
+                    <div role="tabpanel" class="tab-pane fade in active" id="same-price">
+                        @if(isset($listAccessoriesSamePrice) && sizeof($listAccessoriesSamePrice)!==0)
+                            @foreach ($listAccessoriesSamePrice as $listAccessories)
+                                <div class="row">
+                                    @foreach($listAccessories as $accessories)
                                         <div class="col-md-4">
                                             <div class="single-sidebar">
-                                                @foreach($listAccessories as $accessories)
+                                                <div class="thubmnail-recent" style="position: relative;">
+                                                    <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
+                                                    <h2><a href="product/{{$accessories->id}}">{{$accessories->name}}</a></h2>
+                                                    <div class="product-sidebar-price">
+                                                        <span style="color: red">(-{{$accessories->discount_percent * 100}}%)</span>
+                                                        <ins>{{number_format((float)$accessories->current_price - ($accessories->current_price * $accessories->discount_percent),2,",", ".")}}<sup>₫</sup></ins>
+                                                        <del>{{number_format((float)$accessories->current_price,2,",", ".")}}<sup>₫</sup></del>
+                                                    </div>
+                                                    <button id="btnAddToCart{{$accessories->id}}" class="add_to_cart_button" type="submit"
+                                                            style="position: absolute; top: 5px; right: 0;">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        @endif
+
+                        {{-- other brand same price--}}
+                        <div class="row">
+                            @if(isset($listProductOfBrandSamePrice) && sizeof($listProductOfBrandSamePrice)!==0)
+                                @foreach ($listProductOfBrandSamePrice as $brandName=>$productList)
+                                    <div class="col-md-4">
+                                        <div class="single-sidebar">
+                                            <h3 class="sidebar-title text-center">{{$brandName}}</h3>
+                                            @if (sizeof($productList) == 0)
+                                                <div>Không có điện thoại  {{$brandName}}  nào phù hợp với mức giá này</div>
+                                            @else
+                                                @foreach($productList as $p)
                                                     <div class="thubmnail-recent" style="position: relative;">
                                                         <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                                        <h2><a href="product/{{$accessories->id}}">{{$accessories->name}}</a></h2>
+                                                        <h2><a href="product/{{$p->id}}">{{$p->name}}</a></h2>
                                                         <div class="product-sidebar-price">
-                                                            <span style="color: red">(-{{$accessories->discount_percent * 100}}%)</span>
-                                                            <ins>{{number_format((float)$accessories->current_price - ($accessories->current_price * $accessories->discount_percent),2,",", ".")}}<sup>₫</sup></ins>
-                                                            <del>{{number_format((float)$accessories->current_price,2,",", ".")}}<sup>₫</sup></del>
+                                                            <span style="color: red">(-{{$p->discount_percent * 100}}%)</span>
+                                                            <ins>{{number_format((float)$p->current_price - ($p->current_price * $p->discount_percent),2,",", ".")}}<sup>₫</sup></ins>
+                                                            <del>{{number_format((float)$p->current_price,2,",", ".")}}<sup>₫</sup></del>
                                                         </div>
-                                                        <button id="btnAddToCart{{$accessories->id}}" class="add_to_cart_button" type="submit"
+                                                        <button id="btnAddToCart{{$p->id}}" class="add_to_cart_button" type="submit"
                                                                 style="position: absolute; top: 5px; right: 0;">
                                                             <i class="fa fa-shopping-cart"></i>
                                                         </button>
                                                     </div>
                                                 @endforeach
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div> {{-- end other brand same price--}}
+                    </div>
+
+                    {{-- same brand--}}
+                    <div role="tabpanel" class="tab-pane fade" id="same-brand">
+                        @if(isset($listProduct) && sizeof($listProduct)!==0)
+                            @foreach ($listProduct as $groupP)
+                                <div class="row">
+                                    @foreach($groupP as $product)
+                                        <div class="col-md-4">
+                                            <div class="single-sidebar">
+                                                <div class="thubmnail-recent" style="position: relative;">
+                                                    <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
+                                                    <h2><a href="product/{{$product->id}}">{{$product->name}}</a></h2>
+                                                    <div class="product-sidebar-price">
+                                                        <span style="color: red">(-{{$product->discount_percent * 100}}%)</span>
+                                                        <ins>{{number_format((float)$product->current_price - ($product->current_price * $product->discount_percent),2,",", ".")}}<sup>₫</sup></ins>
+                                                        <del>{{number_format((float)$product->current_price,2,",", ".")}}<sup>₫</sup></del>
+                                                    </div>
+                                                    <button id="btnAddToCart{{$product->id}}" class="add_to_cart_button" type="submit"
+                                                            style="position: absolute; top: 5px; right: 0;">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     @endforeach
-                                @endif
-                            @endif
-
-                            @if(isset($listProductOfBrandSamePrice))
-                                @foreach ($listProductOfBrandSamePrice as $brandName=>$productList)
-                                <div class="col-md-4">
-                                    <div class="single-sidebar">
-                                        <h3 class="sidebar-title text-center">{{$brandName}}</h3>
-                                        @if (sizeof($productList) == 0)
-                                            <div>Không có điện thoại  {{$brandName}}  nào phù hợp với mức giá này</div>
-                                        @else
-                                            @foreach($productList as $p)
-                                            <div class="thubmnail-recent" style="position: relative;">
-                                                <img src="img/product-thumb-1.jpg" class="recent-thumb" alt="">
-                                                <h2><a href="product/{{$p->id}}">{{$p->name}}</a></h2>
-                                                <div class="product-sidebar-price">
-                                                    <span style="color: red">(-{{$p->discount_percent * 100}}%)</span>
-                                                    <ins>{{number_format((float)$p->current_price - ($p->current_price * $p->discount_percent),2,",", ".")}}<sup>₫</sup></ins>
-                                                    <del>{{number_format((float)$p->current_price,2,",", ".")}}<sup>₫</sup></del>
-                                                </div>
-                                                <button id="btnAddToCart{{$p->id}}" class="add_to_cart_button" type="submit"
-                                                        style="position: absolute; top: 5px; right: 0;">
-                                                    <i class="fa fa-shopping-cart"></i>
-                                                </button>
-                                            </div>
-                                            @endforeach
-                                        @endif
-                                    </div>
                                 </div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </div>
+                            @endforeach
+                        @endif
+                    </div> {{-- end same brand--}}
                 </div>
             </div>
         </div>
