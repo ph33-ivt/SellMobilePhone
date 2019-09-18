@@ -138,7 +138,16 @@ class CartController extends Controller
                 return redirect()->back()
                     ->withErrors(['qtyProduct'.$product_id => 'Bạn chưa nhập số lượng!',])
                     ->withInput();
+            } else if(!is_numeric($qty)) {
+                return redirect()->back()
+                    ->withErrors(['qtyProduct'.$product_id => 'Số lượng phải là số nguyên dương!',])
+                    ->withInput();
+            } else if ($qty == 0) {
+                return redirect()->back()
+                    ->withErrors(['qtyProduct'.$product_id => 'Số lượng tối thiểu phải bằng 1',])
+                    ->withInput();
             }
+
             $cart->update($product_id, $qty);
         }//exit;
 
